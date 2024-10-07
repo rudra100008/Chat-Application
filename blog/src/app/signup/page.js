@@ -48,7 +48,7 @@ export default function Signup() {
 
     return (
         <div>
-            <Navbar />
+            <Navbar/>
             <ToastContainer
                 position="top-right"
                 autoClose={3000}
@@ -62,7 +62,7 @@ export default function Signup() {
                 theme="dark"
             />
             <Fragment>
-                <Form noValidate onSubmit={handleForm} className="max-w-xl px-2 py-4 mx-auto my-20 rounded-lg shadow-lg ">
+                <Form noValidate onSubmit={handleForm}  className="max-w-xl px-2 py-4  pt-20 mx-auto my-28  rounded-lg shadow-lg">
                     <h3 className="text-center mb-4">Sign Up here</h3>
                     <FormGroup className="">
                         <Label htmlFor="username" className="" >Username:</Label>

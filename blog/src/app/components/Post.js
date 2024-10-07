@@ -1,18 +1,60 @@
-"use client"
-import { Card } from "reactstrap";
+"use client";
+import { useState, useEffect } from "react";
+import axios from "axios";
+import base_url from "../api/base_url";
 
 export default function Post({ post }) {
+    const [image, setImage] = useState(null);
+
+    const getToken = () => {
+        return localStorage.getItem("token");
+    };
+
+    const fetchImage = () => {
+        const token = getToken();
+        axios.get(`${base_url}/posts/image/${post.image}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+            responseType: "blob", // Get the image as a blob
+        })
+        .then((response) => {
+            const imageURL = URL.createObjectURL(response.data); // Create a blob URL for the image
+            setImage(imageURL); // Set the image URL to state
+        })
+        .catch((err) => {
+            console.log("Cannot fetch the image:", err);
+        });
+    };
+
+    // Fetch image when the post has an image
+    useEffect(() => {
+        if (post.image) {
+            fetchImage();
+        }
+    }, [post.image]);
+
     return (
-        <div className="max-w-sm mx-auto mb-6">
-            <header className="mt-4 text-gray-500">{post?.postDate || "No date available"}</header>
-            <Card className="bg-white shadow-lg rounded-lg overflow-hidden">
-                {/* <img src={post?.image || "default-image.jpg"} alt="post image" className="w-full h-48 object-cover" /> */}
-                <h1>{post?.image || "default-image.jpg"}</h1>
-                <div className="p-4">
-                    <h2 className="text-xl font-semibold text-gray-800">{post?.postTitle || "Untitled Post"}</h2>
-                    <p className="text-gray-600 mt-2">{post?.content || "No content available"}</p>
-                </div>
-            </Card>
+        <div className="flex justify-center">
+ <div className="max-w-sm rounded-md overflow-hidden shadow-lg bg-white m-4 ">
+            {/* Render the image if it's available */}
+            {image && (
+                <img
+                    className="w-full object-cover h-64"
+                    src={image}
+                    alt={post.postTitle}
+                />
+            )}
+
+            <div className="px-6 py-4">
+                <div className="font-bold text-xl mb-2">{post.postTitle}</div>
+                <p className="text-gray-700 text-base">{post.content}</p>
+                <p className="text-gray-600 text-sm">
+                    {new Date(post.postDate).toLocaleString()}
+                </p>
+            </div>
         </div>
-    );
+    
+        </div>
+    )
 }
