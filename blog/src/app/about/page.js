@@ -1,11 +1,11 @@
-import AllPost from "../components/AllPost";
 import Navbar from "../components/Navbar";
 
-export default function Home(){
+
+export default function About(){
     return(
         <div>
             <Navbar/>
-            <AllPost/>
+            <p>this is about page</p>
         </div>
     )
 }

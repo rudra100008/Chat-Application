@@ -5,6 +5,7 @@ import { Form, FormGroup, Input, Label } from "reactstrap";
 import base_url from "../api/base_url";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
+import Link from "next/link";
 
 export default function Login() {
     const [user, setUser] = useState({
@@ -25,6 +26,9 @@ export default function Login() {
                 console.log(token);
                 localStorage.setItem("token", token);
                 toast.success("Login Successful");
+                setTimeout(() => {
+                    window.location.href="/home"
+                }, 2000);
             } else {
                 console.error("No data received from server");
             }
@@ -45,14 +49,26 @@ export default function Login() {
     };
 
     return (
-        <div>
-            <Navbar/>
-            
+        <div className="min-h-screen items-center flex justify-center bg-gradient-to-r from-blue-300 to-purple-400">
+            <ToastContainer
+                position="top-right"
+                autoClose={3000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="dark"
+            />
             <Fragment>
-                <Form noValidate onSubmit={handleForm} className="max-w-xl px-2 py-4  pt-20 mx-auto my-28  rounded-lg shadow-lg">
-                    <h3 className="text-center mb-4">Login here</h3>
+                <Form noValidate onSubmit={handleForm} className="bg-white max-w-md w-full p-8 rounded-lg shadow-lg">
+                    <h3 className="text-center text-2xl text-gray-600 font-semibold  mb-6 ">Login to your account</h3>
                     <FormGroup>
-                        <Label>Username:</Label>
+                        <Label htmlFor="username" className="block text-sm text-gray-500 ">
+                            Username:
+                        </Label>
                         <Input
                             type="text"
                             placeholder="Enter your username"
@@ -63,7 +79,9 @@ export default function Login() {
                         />
                     </FormGroup>
                     <FormGroup>
-                        <Label>Password:</Label>
+                        <Label htmlFor="password" className="block text-sm text-gray-500 ">
+                            Password:
+                        </Label>
                         <Input
                             type="password"
                             placeholder="Enter your password"
@@ -78,6 +96,9 @@ export default function Login() {
                             Submit
                         </button>
                     </FormGroup>
+                    <p className="mt-4 font-semibold text-sm text-center ">
+                        Don't have an account <Link className="no-underline text-blue-500 hover:text-blue-300 hover:underline" href="/signup">Register here?</Link>
+                    </p>
                 </Form>
             </Fragment>
         </div>

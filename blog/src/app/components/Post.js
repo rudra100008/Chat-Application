@@ -45,7 +45,6 @@ export default function Post({ post }) {
                     alt={post.postTitle}
                 />
             )}
-
             <div className="px-6 py-4">
                 <div className="font-bold text-xl mb-2">{post.postTitle}</div>
                 <p className="text-gray-700 text-base">{post.content}</p>

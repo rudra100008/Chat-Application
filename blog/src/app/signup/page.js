@@ -5,6 +5,7 @@ import { toast, ToastContainer } from "react-toastify";
 import { Form, FormGroup, Input, Label } from "reactstrap";
 import base_url from "../api/base_url";
 import Navbar from "../components/Navbar";
+import Link from "next/link";
 
 
 export default function Signup() {
@@ -44,11 +45,13 @@ export default function Signup() {
     const handleForm = (e) => {
         e.preventDefault();
         postUserToServer();
+        setTimeout(()=>{
+             window.location.href="/login"
+        },2000)
     }
 
     return (
-        <div>
-            <Navbar/>
+        <div className="min-h-screen items-center flex justify-center bg-gradient-to-r from-blue-300 to-purple-400">
             <ToastContainer
                 position="top-right"
                 autoClose={3000}
@@ -62,8 +65,8 @@ export default function Signup() {
                 theme="dark"
             />
             <Fragment>
-                <Form noValidate onSubmit={handleForm}  className="max-w-xl px-2 py-4  pt-20 mx-auto my-28  rounded-lg shadow-lg">
-                    <h3 className="text-center mb-4">Sign Up here</h3>
+                <Form noValidate onSubmit={handleForm}   className="bg-white max-w-md w-full p-8 rounded-lg shadow-lg">
+                    <h3 className="text-center mb-4">Create your account</h3>
                     <FormGroup className="">
                         <Label htmlFor="username" className="" >Username:</Label>
                         <Input
@@ -100,6 +103,9 @@ export default function Signup() {
                     <FormGroup>
                         <button type="Submit" className="bg-blue-400 p-2 text-white font-semibold  rounded-xl shadow-lg transition-transform hover:bg-blue-500 hover:scale-110" >Signup</button>
                     </FormGroup>
+                    <p className="mt-4 font-semibold text-sm text-center ">
+                       <Link className="no-underline text-blue-500 hover:text-blue-300 hover:underline" href="/">Already have a account?</Link>
+                    </p>
                 </Form>
 
             </Fragment>

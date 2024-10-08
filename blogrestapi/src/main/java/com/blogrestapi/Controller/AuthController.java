@@ -10,7 +10,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,7 +26,6 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin("http://localhost:3000")
 public class AuthController {
     @Autowired
     private JWTTokenHelper jwtTokenHelper;
