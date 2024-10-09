@@ -41,9 +41,11 @@ public class AuthController {
         this.authenticate(request.getUsername(), request.getPassword());
         UserDetails userDetails=this.userDetailService.loadUserByUsername(request.getUsername());
         String token= this.jwtTokenHelper.generateToken(userDetails);
+        Boolean isTokenExpired=this.jwtTokenHelper.isTokenExpired(token);
         JwtResponse response=new JwtResponse();
         response.setToken(token);
-        
+        response.setUsername(request.getUsername());
+        response.setIsTokenExpired(isTokenExpired);
         return ResponseEntity.ok(response);
     }
     public void authenticate(String username, String password) {

@@ -23,6 +23,12 @@ export default function AllPost(){
             setPost(data)
             console.log(data)
         } catch (error) {
+            if(error.response && error.response.status===401)
+            {
+                toast.error("Session expired.Please login again")
+                localStorage.removeItem("token")
+                window.location.href="/"
+            }
             console.log(error.response.data)
         }finally{
             //after the data is fecthed the loading is set true

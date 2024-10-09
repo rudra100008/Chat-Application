@@ -27,12 +27,13 @@ public class UserDTO {
     @Email(message = "Invalid email format")
     private String email;
 
-
-    // @JsonIgnore // password will not appear in the json field
     @NotEmpty(message = "Required!")
     private String password;
+
     private boolean isEnable;
+
     private Role role;
+
     @JsonIgnore
     public String getPassword(){
         return this.password;

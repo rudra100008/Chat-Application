@@ -16,6 +16,9 @@ export default function Login() {
     const newUser = (e) => {
         setUser({ ...user, [e.target.name]: e.target.value });
     };
+    const checkExpiryofToken=()=>{
+
+    }
 
     const postFromServer = () => {
         axios.post(`${base_url}/login`, user)
@@ -23,12 +26,19 @@ export default function Login() {
             if (response && response.data) {
                 setUser({ username: "", password: "" });
                 const { token } = response.data;
-                console.log(token);
+                if(response.data && response.status===401)
+                {
+                    toast.error("Session expired.Please login again")
+                    localStorage.removeItem("token")
+                    window.location.href="/"
+                }else{
+                    console.log(token);
                 localStorage.setItem("token", token);
                 toast.success("Login Successful");
                 setTimeout(() => {
                     window.location.href="/home"
                 }, 2000);
+                }
             } else {
                 console.error("No data received from server");
             }

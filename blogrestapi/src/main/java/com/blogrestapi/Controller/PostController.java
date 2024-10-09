@@ -131,7 +131,7 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
-    // get posts of in a particular cateogry
+    // get posts of in a particular category
     @GetMapping("posts/category/{categoryId}")
     public ResponseEntity<?> getPostByCategory(@PathVariable("categoryId") int categoryId,
             @RequestParam(value = "pageNumber", required = false, defaultValue = AppConstant.PAGE_NUMBER) int pageNumber,

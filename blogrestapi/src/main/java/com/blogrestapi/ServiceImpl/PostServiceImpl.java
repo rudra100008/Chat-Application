@@ -182,14 +182,14 @@ public class PostServiceImpl implements PostService {
     public PageResponse<PostDTO> getPostByCategoryId(int categoryId,int pageNumber,int pageSize,String sortBy,String sortDir) {
         Sort sort=sortDir.equalsIgnoreCase("ascending")
         ?Sort.by(sortBy).ascending():Sort.by(sortBy).descending();
-        //to get the cateogry with providec categoryID
+        //to get the category with provide categoryID
         Category category=this.categoryDao.findById(categoryId)
         .orElseThrow(()->new ResourceNotFoundException("Category not found by this id: "+categoryId));
 
         Pageable pageable=PageRequest.of(pageNumber, pageSize,sort);
         Page<Post> pagePost=this.postDao.findPostByCategory(category,pageable);
         List<PostDTO> allPost=pagePost.getContent().stream()
-        .map(post->modelMapper.map(pagePost, PostDTO.class)).toList();
+        .map(post->modelMapper.map(post, PostDTO.class)).toList();
 
         long totalElement=pagePost.getTotalElements();
         int totalPage=pagePost.getTotalPages();
