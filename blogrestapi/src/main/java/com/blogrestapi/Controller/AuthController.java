@@ -3,6 +3,9 @@ package com.blogrestapi.Controller;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.blogrestapi.Dao.UserDao;
+import com.blogrestapi.Entity.User;
+import com.blogrestapi.Exception.ResourceNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +38,8 @@ public class AuthController {
     private UserDetailService userDetailService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private UserDao userDao;
 
     @PostMapping("/login")
     public ResponseEntity<?> createToken(@RequestBody JwtRequest request) {
@@ -42,9 +47,12 @@ public class AuthController {
         UserDetails userDetails=this.userDetailService.loadUserByUsername(request.getUsername());
         String token= this.jwtTokenHelper.generateToken(userDetails);
         Boolean isTokenExpired=this.jwtTokenHelper.isTokenExpired(token);
+        User user=   this.userDao.findByUsername(request.getUsername()).orElseThrow(()->
+                new ResourceNotFoundException("User not found"));
         JwtResponse response=new JwtResponse();
         response.setToken(token);
-        response.setUsername(request.getUsername());
+        response.setUserId(user.getId());
+        response.setUsername(user.getUsername());
         response.setIsTokenExpired(isTokenExpired);
         return ResponseEntity.ok(response);
     }

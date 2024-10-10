@@ -36,7 +36,7 @@ export default function Post({ post }) {
 
     return (
         <div className="flex justify-center">
- <div className="max-w-sm rounded-md overflow-hidden shadow-lg bg-white m-4 ">
+ <div className="max-w-sm rounded-md overflow-hidden shadow-lg bg-white m-4 cursor-pointer">
             {/* Render the image if it's available */}
             {image && (
                 <img

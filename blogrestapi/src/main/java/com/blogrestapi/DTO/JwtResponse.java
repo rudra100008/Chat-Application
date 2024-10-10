@@ -12,5 +12,6 @@ import java.util.Date;
 public class JwtResponse {
     private String token;
     private String username;
+    private int userId;
     private Boolean isTokenExpired;
 }

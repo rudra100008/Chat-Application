@@ -3,9 +3,13 @@ import { useState,useEffect } from "react"
 import Post from "./Post";
 import axios from "axios";
 import base_url from "../api/base_url";
+import { ToastContainer ,toast} from "react-toastify";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 
 export default function AllPost(){
+    const router =useRouter();
     const [post,setPost]=useState([])
     const [loading ,setLoading]=useState(false)
     const getToken=()=>{
@@ -27,7 +31,12 @@ export default function AllPost(){
             {
                 toast.error("Session expired.Please login again")
                 localStorage.removeItem("token")
-                window.location.href="/"
+                localStorage.removeItem("username")
+                localStorage.removeItem("userId")
+                setTimeout(()=>{
+                   router.push("/")
+                },1000)
+                return
             }
             console.log(error.response.data)
         }finally{
@@ -43,7 +52,23 @@ getPostFromServer();
 },[])
     return(
         <div>
+           <ToastContainer
+        position="top-right" 
+        autoClose={3000} 
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark" 
+      />
+
             {!loading && <p className="text-center">Post loading.........</p>}
+            <div>
+                {loading && <Link href="/addPost">Do you want to post something?</Link>}
+            </div>
             <div>
             {
                 loading && post.length>0

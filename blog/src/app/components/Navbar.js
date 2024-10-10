@@ -1,53 +1,52 @@
 "use client"
 import Link from 'next/link';
 import { useState,useEffect } from 'react';
+import base_url from '../api/base_url';
+import { toast } from 'react-toastify';
+import axios from 'axios';
+import { useRouter } from 'next/navigation';
 
 const Navbar = () => {
+  const router =  useRouter();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [loggedIn,setLoggedIn]=useState(false);
+  const [username, setUsername]=useState('')
+
   const getToken=()=>{
     return localStorage.getItem('token')
   }
   useEffect(()=>{
     const token=getToken()
+    setUsername(localStorage.getItem('username'))
     if(token){
       setLoggedIn(true)
     }
   },[])
- const handleLogout=()=>{
-  localStorage.removeItem('token')
-  setLoggedIn(false)
-  window.location.reload()
+ const handleLogout= async()=>{
+  try {
+    const response=await axios.post(`${base_url}/logout`)
+    if(response.status===200){
+      localStorage.removeItem('token')
+      localStorage.removeItem('username')
+      localStorage.removeItem('userId')
+      setLoggedIn(false)
+      toast.success("Logout Successful");
+      setTimeout(()=>{
+       router.push("/")
+      },1000)
+    }else{
+      console.log("Logout failed")
+    }
+  } catch (error) {
+    console.log(error)
+  }
+  
  }
   return (
     <nav className="bg-gray-800 p-4">
-      <div className="container mx-auto flex justify-between items-center">
-        <div className="text-white text-xl font-bold">
-          <Link href="/home">BlogApp</Link>  
-          </div>
-        <div className="hidden md:flex space-x-6">
-          <Link href="/home" className="text-gray-300 mt-2  hover:text-white">
-            Home
-          </Link>
-          <Link href="/about" className="text-gray-300 mt-2 hover:text-white">
-            About
-          </Link>
-          {!loggedIn ?(
-            <>
-            <Link href="/signup" className="text-gray-300 mt-2 hover:text-white">
-            Signup
-          </Link>
-          <Link href="/" className="text-gray-300 mt-2 hover:text-white">
-            Login
-          </Link>
-          </>
-          ):(
-            <button className="ml-4 bg-red-600 text-white px-3 py-2 rounded-lg hover:bg-red-700" onClick={handleLogout}>
-              Logout
-            </button>
-          )}
-          
-           <div className="relative">
+      <div className="container mx-auto flex justify-between items-center ">
+      <div className="flex space-x-6">
+      <div className="relative">
           <button
             className="text-gray-300 hover:text-white focus:outline-none"
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -68,19 +67,27 @@ const Navbar = () => {
             </svg>
           </button>
           {isDropdownOpen && (
-            <div className="absolute right-0 mt-2 rounded-lg shadow-lg bg-white  w-32 overflow-hidden transition-all duration-500 ease-in">
+            <div className="absolute left-0 mt-2 rounded-lg shadow-lg bg-white  w-32 overflow-hidden transition-all duration-500 ease-in">
               <Link href="/" className="block text-gray-700 px-4 py-2 text-center rounded-lg hover:bg-gray-100">
                 Home
               </Link>
-              <Link href="/about" className="block text-gray-700 px-4 py-2 text-center rounded-lg hover:bg-gray-100">
+              <Link href="/about" className="block  text-gray-700 px-4 py-2 text-center rounded-lg hover:bg-gray-100">
                 About
               </Link>
-              <Link href="/signup" className="block text-gray-700 px-4 py-2 text-center rounded-lg hover:bg-gray-100">
+              {!loggedIn ?
+              (  <>
+                <Link href="/signup" className="block text-gray-700 px-4 py-2 text-center rounded-lg hover:bg-gray-100">
                 Signup
               </Link>
               <Link href="/" className="block text-gray-700 px-4 py-2 text-center rounded-lg hover:bg-gray-100">
                 Login
               </Link>
+                </>):(
+                  <Link href="/" onClick={handleLogout} className="block text-gray-700 px-4 py-2 text-center rounded-lg hover:bg-gray-100">
+                    Logout
+                </Link>
+                )
+              }
               <Link href="/settings" className="block text-gray-700 px-4 py-2 text-center rounded-lg hover:bg-gray-100">
                 Settings
               </Link>
@@ -90,6 +97,36 @@ const Navbar = () => {
             </div>
           )}
         </div>
+        <div className="text-white text-xl font-bold mt-2">
+        <Link href="/home">BlogApp</Link> 
+        </div> 
+        </div>
+        <div className="hidden md:flex space-x-6">
+          <Link href="/home" className="text-gray-300 mt-2  hover:text-white">
+            Home
+          </Link>
+          <Link href="/about" className="text-gray-300 mt-2 hover:text-white">
+            About
+          </Link>
+          {!loggedIn ?(
+            <>
+            <Link href="/signup" className="text-gray-300 mt-2 hover:text-white">
+            Signup
+          </Link>
+          <Link href="/" className="text-gray-300 mt-2 hover:text-white">
+            Login
+          </Link>
+          </>
+          ):(
+            <>
+            <button className="ml-4 bg-red-600 text-white px-3 py-2 rounded-lg hover:bg-red-700" onClick={handleLogout}>
+              Logout
+            </button>
+            <Link href="/profile" className="text-lg font-bold text-gray-400 hover:text-gray-300" >
+              { `@${username.toUpperCase()}`}
+            </Link>
+            </>
+          )}
         </div>
 
         {/* Mobile Menu */}

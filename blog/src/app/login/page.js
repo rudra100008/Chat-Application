@@ -1,13 +1,15 @@
 "use client";
 import { Fragment, useState } from "react";
-import Navbar from "../components/Navbar";
 import { Form, FormGroup, Input, Label } from "reactstrap";
 import base_url from "../api/base_url";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+
 
 export default function Login() {
+    const router = useRouter();
     const [user, setUser] = useState({
         username: "",
         password: ""
@@ -16,27 +18,29 @@ export default function Login() {
     const newUser = (e) => {
         setUser({ ...user, [e.target.name]: e.target.value });
     };
-    const checkExpiryofToken=()=>{
-
-    }
+    
 
     const postFromServer = () => {
         axios.post(`${base_url}/login`, user)
         .then((response) => {
             if (response && response.data) {
                 setUser({ username: "", password: "" });
-                const { token } = response.data;
+                const { token ,username,userId} = response.data;
                 if(response.data && response.status===401)
                 {
                     toast.error("Session expired.Please login again")
                     localStorage.removeItem("token")
-                    window.location.href="/"
+                    localStorage.removeItem("username")
+                    localStorage.removeItem("userId")
+                    router.push("/")
                 }else{
                     console.log(token);
                 localStorage.setItem("token", token);
+                localStorage.setItem("username",username);
+                localStorage.setItem("userId",userId);
                 toast.success("Login Successful");
                 setTimeout(() => {
-                    window.location.href="/home"
+                   router.push("/home")
                 }, 2000);
                 }
             } else {

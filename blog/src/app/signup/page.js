@@ -4,7 +4,6 @@ import { Fragment, useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import { Form, FormGroup, Input, Label } from "reactstrap";
 import base_url from "../api/base_url";
-import Navbar from "../components/Navbar";
 import Link from "next/link";
 
 
@@ -26,6 +25,9 @@ export default function Signup() {
                 setUser({ username: "", email: "", password: "" })
                 toast.success(response.data.message);
                 setValidationError({});
+                setTimeout(()=>{
+                    window.location.href="/"
+               },2000)
             }).catch((error) => {
                 console.log(error.response.data)
                 if (error.response.status === 400) {
@@ -45,9 +47,7 @@ export default function Signup() {
     const handleForm = (e) => {
         e.preventDefault();
         postUserToServer();
-        setTimeout(()=>{
-             window.location.href="/login"
-        },2000)
+       
     }
 
     return (

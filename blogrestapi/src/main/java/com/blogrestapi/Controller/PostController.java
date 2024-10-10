@@ -54,10 +54,13 @@ public class PostController {
 
     // handler for the creating or saving the post in the database
     @PostMapping("/posts")
-    public ResponseEntity<?> createPost(@Valid @RequestBody PostDTO postDTO, BindingResult result,
-            @RequestParam("userId") int userId,
-            @RequestParam("categoryId") int categoryId) {
+    public ResponseEntity<?> createPost(@Valid @RequestBody PostDTO postDTO,
+                                        BindingResult result,
+                                        @RequestParam("userId") int userId,
+                                        @RequestParam("categoryId") int categoryId,
+                                        @RequestParam("imageFile") MultipartFile image) {
         Map<String, Object> response = new HashMap<>();
+
         if (result.hasErrors()) {
             Map<String, Object> error = new HashMap<>();
             result.getFieldErrors().forEach(err -> error.put(err.getField(), err.getDefaultMessage()));
@@ -65,9 +68,23 @@ public class PostController {
             response.put("message", error);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
+
+        // Handle image upload
+        try {
+            String fileName = this.fileService.uploadFile(path, image);
+            postDTO.setImage(fileName); // Set the filename in postDTO
+        } catch (IOException e) {
+            response.put("status", "INTERNAL_SERVER_ERROR(500)");
+            response.put("message", "Image upload failed: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+
+        // Create the post
         PostDTO savedPost = this.postService.createPost(postDTO, userId, categoryId);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedPost);
     }
+
+
 
     // handler for updating the post
     @PutMapping("/posts/{id}")
@@ -151,7 +168,7 @@ public class PostController {
         List<PostDTO> searchedPost = this.postService.searchPost(search);
         return ResponseEntity.ok(searchedPost);
     }
-    //handler to save the the image of the a post 
+    //handler to save image of post
     @PostMapping("/posts/{postId}/uploadImage")
     public ResponseEntity<?> uploadPostImage(
             @RequestParam("image") MultipartFile imageFile,
