@@ -35,12 +35,17 @@ export default function AddPost() {
         const userId = localStorage.getItem("userId");
 
         const formData = new FormData();
-        formData.append("postTitle", postData.postTitle);
-        formData.append("content", postData.content);
-        formData.append("imageFile", postData.image); // Only append if image is provided
-        formData.append("categoryId", postData.categoryId);
+        const postDTO={
+            postTitle :postData.postTitle,
+            content : postData.content,
+        }
+        formData.append("postDTO", new Blob([JSON.stringify({
+            postTitle: postData.postTitle,
+            content: postData.content,
+        })], { type: "application/json" }));
+        formData.append("image", postData.image); 
 
-        axios.post(`${base_url}/posts?userId=${userId}`, formData, {
+        axios.post(`${base_url}/posts?userId=${userId}&categoryId=${postData.categoryId}`, formData, {
             headers: {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "multipart/form-data"
@@ -48,6 +53,7 @@ export default function AddPost() {
         })
         .then((response) => {
             toast.success("Post created successfully!");
+            console.log(response.data)
             setPostData({
                 postTitle: "",
                 content: "",

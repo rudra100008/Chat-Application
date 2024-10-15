@@ -6,6 +6,8 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -31,7 +33,8 @@ public class PostController {
     private PostService postService;
     @Autowired
     private FileService fileService;
-
+    @Autowired
+    private ObjectMapper objectMapper;
     @Value("${project.image}")
     private String path;
     // getting the all post in the database
@@ -53,12 +56,12 @@ public class PostController {
     }
 
     // handler for the creating or saving the post in the database
-    @PostMapping("/posts")
-    public ResponseEntity<?> createPost(@Valid @RequestBody PostDTO postDTO,
+    @PostMapping(path = "/posts", consumes = "multipart/form-data")
+    public ResponseEntity<?> createPost(@Valid @RequestPart("postDTO") PostDTO postDTO,
                                         BindingResult result,
                                         @RequestParam("userId") int userId,
                                         @RequestParam("categoryId") int categoryId,
-                                        @RequestParam("imageFile") MultipartFile image) {
+                                        @RequestPart("image") MultipartFile imageFile) {
         Map<String, Object> response = new HashMap<>();
 
         if (result.hasErrors()) {
@@ -69,20 +72,35 @@ public class PostController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
 
-        // Handle image upload
+        String imageName = null;
         try {
-            String fileName = this.fileService.uploadFile(path, image);
-            postDTO.setImage(fileName); // Set the filename in postDTO
+            // Validate file size and type
+            if (imageFile.isEmpty()) {
+                response.put("status", "BAD_REQUEST(400)");
+                response.put("message", "Image file is required");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            }
+
+
+            imageName = this.fileService.uploadFile(path, imageFile);
         } catch (IOException e) {
+            e.printStackTrace();  // Log the exception
             response.put("status", "INTERNAL_SERVER_ERROR(500)");
             response.put("message", "Image upload failed: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        } catch (Exception e) {
+            e.printStackTrace();  // Log unexpected exceptions
+            response.put("status", "INTERNAL_SERVER_ERROR(500)");
+            response.put("message", "An unexpected error occurred: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
 
+        postDTO.setImage(imageName);
         // Create the post
         PostDTO savedPost = this.postService.createPost(postDTO, userId, categoryId);
         return ResponseEntity.status(HttpStatus.CREATED).body(savedPost);
     }
+
 
 
 
