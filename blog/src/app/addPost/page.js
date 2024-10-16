@@ -35,16 +35,12 @@ export default function AddPost() {
         const userId = localStorage.getItem("userId");
 
         const formData = new FormData();
-        const postDTO={
-            postTitle :postData.postTitle,
-            content : postData.content,
-        }
         formData.append("postDTO", new Blob([JSON.stringify({
             postTitle: postData.postTitle,
             content: postData.content,
         })], { type: "application/json" }));
         formData.append("image", postData.image); 
-
+        const categoryId=postData.categoryId ? parseInt(postData.categoryId):'' ;
         axios.post(`${base_url}/posts?userId=${userId}&categoryId=${postData.categoryId}`, formData, {
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -60,10 +56,22 @@ export default function AddPost() {
                 image: null,
                 categoryId: ""
             });
+            setValidationError({
+                postTitle:"",
+                content:"",
+                image:null,
+                categoryId:""
+            })
         })
         .catch((error) => {
-            console.error(error);
-            toast.error("Error creating post.");
+            console.error(error.response.data);
+            if(error.response.status===400){
+                const {message}=error.response.data;
+                setValidationError(message);
+            }else{
+                toast.error("Unexcepted error occured")
+            }
+           
         });
     };
 
@@ -75,7 +83,7 @@ export default function AddPost() {
     return (
         <div className="flex justify-center items-center">
             <Fragment>
-                <Form onSubmit={handleSubmit} className="max-w-xl p-8 w-full rounded-lg shadow-lg mt-5">
+                <Form noValidate onSubmit={handleSubmit} className="max-w-xl p-8 w-full rounded-lg shadow-lg mt-5">
                     <h1 className="text-center">Post</h1>
                     <FormGroup>
                         <Label htmlFor="postTitle">Title</Label>
@@ -88,6 +96,7 @@ export default function AddPost() {
                             placeholder="Enter your post Title"
                             required
                         />
+                        <p className="text-red-500">{validationError.postTitle}</p>
                     </FormGroup>
                     <FormGroup>
                         <Label htmlFor="content">Content</Label>
@@ -100,6 +109,8 @@ export default function AddPost() {
                             placeholder="Enter your content"
                             required
                         />
+                        <p className="text-red-500">{validationError.content}</p>
+
                     </FormGroup>
                     <FormGroup>
                         <Label htmlFor="image">Image</Label>
@@ -120,7 +131,7 @@ export default function AddPost() {
                             onChange={handleChange}
                             required
                         >
-                            <option value="" disabled>Choose a category</option>
+                            <option  value="" disabled>Choose a category</option>
                             <option value="1">Music</option>
                             <option value="2">Movie</option>
                             <option value="3">Food</option>

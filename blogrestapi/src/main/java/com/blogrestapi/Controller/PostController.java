@@ -59,8 +59,8 @@ public class PostController {
     @PostMapping(path = "/posts", consumes = "multipart/form-data")
     public ResponseEntity<?> createPost(@Valid @RequestPart("postDTO") PostDTO postDTO,
                                         BindingResult result,
-                                        @RequestParam("userId") int userId,
-                                        @RequestParam("categoryId") int categoryId,
+                                        @RequestParam("userId") Integer userId,
+                                        @RequestParam(value="categoryId",required = false) Integer categoryId,
                                         @RequestPart("image") MultipartFile imageFile) {
         Map<String, Object> response = new HashMap<>();
 
@@ -80,8 +80,11 @@ public class PostController {
                 response.put("message", "Image file is required");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
             }
-
-
+            if (imageFile.getSize() > 10 * 1024 * 1024) { // 10MB in bytes
+                response.put("status", "BAD_REQUEST(400)");
+                response.put("message", "Image file size exceeds the maximum limit of 10MB");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            }
             imageName = this.fileService.uploadFile(path, imageFile);
         } catch (IOException e) {
             e.printStackTrace();  // Log the exception
