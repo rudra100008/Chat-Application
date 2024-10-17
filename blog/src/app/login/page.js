@@ -26,15 +26,6 @@ export default function Login() {
             if (response && response.data) {
                 setUser({ username: "", password: "" });
                 const { token ,username,userId} = response.data;
-                if(response.data && response.status===401)
-                {
-                    toast.error("Session expired.Please login again")
-                    localStorage.removeItem("token")
-                    localStorage.removeItem("username")
-                    localStorage.removeItem("userId")
-                    router.push("/")
-                }else{
-                    console.log(token);
                 localStorage.setItem("token", token);
                 localStorage.setItem("username",username);
                 localStorage.setItem("userId",userId);
@@ -42,7 +33,7 @@ export default function Login() {
                 setTimeout(() => {
                    router.push("/home")
                 }, 2000);
-                }
+                
             } else {
                 console.error("No data received from server");
             }
@@ -50,8 +41,12 @@ export default function Login() {
         .catch((err) => {
             console.log(err.response?.data);
             const message = err.response?.data?.message || "Unknown error";
-            if (err.response?.status === 500) {
+            if(err.response.status===401){
+                toast.error("Invalid username or password")
+            }else if (err.response?.status === 500) {
                 toast.error(message);
+            }else{
+                toast.error("Something went wrong")
             }
         });
     };

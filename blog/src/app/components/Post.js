@@ -1,9 +1,9 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, forwardRef } from "react";
 import axios from "axios";
 import base_url from "../api/base_url";
 
-export default function Post({ post }) {
+ const  Post=forwardRef(({ post },ref) => {
     const [image, setImage] = useState(null);
     const [user,setUser]=useState()
     const getToken = () => {
@@ -34,7 +34,6 @@ export default function Post({ post }) {
                 Authorization:`Bearer ${token}`
             }
         }).then((response)=>{
-            console.log(response.data)
             setUser(response.data)
         }).catch((err)=>{
             console.log(err.response.data)
@@ -99,4 +98,5 @@ export default function Post({ post }) {
             </div>
         </div>
     );
-}
+});
+export default Post;

@@ -40,7 +40,7 @@ export default function AddPost() {
             content: postData.content,
         })], { type: "application/json" }));
         formData.append("image", postData.image); 
-        const categoryId=postData.categoryId ? parseInt(postData.categoryId):'' ;
+        
         axios.post(`${base_url}/posts?userId=${userId}&categoryId=${postData.categoryId}`, formData, {
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -84,7 +84,7 @@ export default function AddPost() {
         <div className="flex justify-center items-center">
             <Fragment>
                 <Form noValidate onSubmit={handleSubmit} className="max-w-xl p-8 w-full rounded-lg shadow-lg mt-5">
-                    <h1 className="text-center">Post</h1>
+                    <h1 className="text-center text-3xl font-bold">What do you want to post ?</h1>
                     <FormGroup>
                         <Label htmlFor="postTitle">Title</Label>
                         <Input 
@@ -107,9 +107,10 @@ export default function AddPost() {
                             value={postData.content}
                             onChange={handleChange}
                             placeholder="Enter your content"
+                            className="max-h-14"
                             required
                         />
-                        <p className="text-red-500">{validationError.content}</p>
+                        <p className="text-red-500 font-semiblod">{validationError.content}</p>
 
                     </FormGroup>
                     <FormGroup>

@@ -67,53 +67,53 @@ const Navbar = () => {
             </svg>
           </button>
           {isDropdownOpen && (
-            <div className="absolute left-0 mt-2 rounded-lg shadow-lg bg-white  w-32 overflow-hidden transition-all duration-500 ease-in">
-              <Link href="/" className="block text-gray-700 px-4 py-2 text-center rounded-lg hover:bg-gray-100">
+            <div className="absolute left-0 mt-2 rounded-lg shadow-lg bg-white  w-32 overflow-hidden transition-all fpcus duration-500 ease-in">
+              <Link href="/" className="block no-underline text-gray-700 px-4 py-2 text-center rounded-lg focus:outline-none hover:bg-gray-100">
                 Home
               </Link>
-              <Link href="/about" className="block  text-gray-700 px-4 py-2 text-center rounded-lg hover:bg-gray-100">
+              <Link href="/about" className="block no-underline text-gray-700 px-4 py-2 text-center rounded-lg hover:bg-gray-100">
                 About
               </Link>
               {!loggedIn ?
               (  <>
-                <Link href="/signup" className="block text-gray-700 px-4 py-2 text-center rounded-lg hover:bg-gray-100">
+                <Link href="/signup" className="block no-underline text-gray-700 px-4 py-2 text-center rounded-lg hover:bg-gray-100">
                 Signup
               </Link>
-              <Link href="/" className="block text-gray-700 px-4 py-2 text-center rounded-lg hover:bg-gray-100">
+              <Link href="/" className="block no-underline text-gray-700 px-4 py-2 text-center rounded-lg hover:bg-gray-100">
                 Login
               </Link>
                 </>):(
-                  <Link href="/" onClick={handleLogout} className="block text-gray-700 px-4 py-2 text-center rounded-lg hover:bg-gray-100">
+                  <Link href="/" onClick={handleLogout} className="block no-underline text-gray-700 px-4 py-2 text-center rounded-lg hover:bg-gray-100">
                     Logout
                 </Link>
                 )
               }
-              <Link href="/settings" className="block text-gray-700 px-4 py-2 text-center rounded-lg hover:bg-gray-100">
+              <Link href="/settings" className="block no-underline text-gray-700 px-4 py-2 text-center rounded-lg hover:bg-gray-100">
                 Settings
               </Link>
-              <Link href="/profile" className="block text-gray-700 px-4 py-2 text-center rounded-lg hover:bg-gray-100">
+              <Link href="/profile" className="block no-underline text-gray-700 px-4 py-2 text-center rounded-lg hover:bg-gray-100">
                 Profile
               </Link>
             </div>
           )}
         </div>
-        <div className="text-white text-xl font-bold mt-2">
-        <Link href="/home">BlogApp</Link> 
+        <div className="text-xl font-bold mt-2">
+        <Link className='no-underline text-white' href="/home">BlogApp</Link> 
         </div> 
         </div>
         <div className="hidden md:flex space-x-6">
-          <Link href="/home" className="text-gray-300 mt-2  hover:text-white">
+          <Link href="/home" className="text-gray-300 mt-2 no-underline  hover:text-white">
             Home
           </Link>
-          <Link href="/about" className="text-gray-300 mt-2 hover:text-white">
+          <Link href="/about" className="text-gray-300 mt-2 no-underline hover:text-white">
             About
           </Link>
           {!loggedIn ?(
             <>
-            <Link href="/signup" className="text-gray-300 mt-2 hover:text-white">
+            <Link href="/signup" className="text-gray-300 mt-2 no-underline hover:text-white">
             Signup
           </Link>
-          <Link href="/" className="text-gray-300 mt-2 hover:text-white">
+          <Link href="/" className="text-gray-300 mt-2 no-underline hover:text-white">
             Login
           </Link>
           </>
@@ -122,15 +122,12 @@ const Navbar = () => {
             <button className="ml-4 bg-red-600 text-white px-3 py-2 rounded-lg hover:bg-red-700" onClick={handleLogout}>
               Logout
             </button>
-            <Link href="/profile" className="text-lg font-bold text-gray-400 hover:text-gray-300" >
+            <Link href="/profile" className="text-lg font-bold text-gray-400 no-underline hover:text-gray-300" >
               { `@${username.toUpperCase()}`}
             </Link>
             </>
           )}
         </div>
-
-        {/* Mobile Menu */}
-       
       </div>
     </nav>
   );
