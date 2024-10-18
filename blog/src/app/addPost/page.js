@@ -16,9 +16,10 @@ export default function AddPost() {
     const [validationError, setValidationError] = useState({
         postTitle: "",
         content: "",
-        image: null,
+        image: "",
         categoryId: ""
     });
+
 
     // Handle text inputs
     const handleChange = (e) => {
@@ -59,7 +60,7 @@ export default function AddPost() {
             setValidationError({
                 postTitle:"",
                 content:"",
-                image:null,
+                image:"",
                 categoryId:""
             })
         })
@@ -67,7 +68,13 @@ export default function AddPost() {
             console.error(error.response.data);
             if(error.response.status===400){
                 const {message}=error.response.data;
-                setValidationError(message);
+                if(typeof message === 'object'){
+                    setValidationError({
+                        postTitle:message.postTitle,
+                        content:message.content,
+                        image:message.image
+                    })
+                }
             }else{
                 toast.error("Unexcepted error occured")
             }
@@ -79,14 +86,17 @@ export default function AddPost() {
         e.preventDefault();
         postDataToServer();
     };
+    const handleCancel=()=>{
+        window.location.href="/home"
+    }
 
     return (
         <div className="flex justify-center items-center">
             <Fragment>
                 <Form noValidate onSubmit={handleSubmit} className="max-w-xl p-8 w-full rounded-lg shadow-lg mt-5">
-                    <h1 className="text-center text-3xl font-bold">What do you want to post ?</h1>
+                    <h1 className="text-center mb-3 text-3xl font-bold">What do you want to post ?</h1>
                     <FormGroup>
-                        <Label htmlFor="postTitle">Title</Label>
+                        <Label htmlFor="postTitle" className="text-sm text-gray-500">Title</Label>
                         <Input 
                             type="text"
                             name="postTitle"
@@ -94,9 +104,10 @@ export default function AddPost() {
                             value={postData.postTitle}
                             onChange={handleChange}
                             placeholder="Enter your post Title"
+                            invalid={validationError.postTitle}
                             required
                         />
-                        <p className="text-red-500">{validationError.postTitle}</p>
+                        <p className="text-red-300  text-sm">{validationError.postTitle}</p>
                     </FormGroup>
                     <FormGroup>
                         <Label htmlFor="content">Content</Label>
@@ -107,10 +118,12 @@ export default function AddPost() {
                             value={postData.content}
                             onChange={handleChange}
                             placeholder="Enter your content"
-                            className="max-h-14"
+                            className="h-48"
                             required
+                            invalid={validationError.content}
+                            valid={validationError.content}
                         />
-                        <p className="text-red-500 font-semiblod">{validationError.content}</p>
+                        <p className="text-red-300 text-sm ">{validationError.content}</p>
 
                     </FormGroup>
                     <FormGroup>
@@ -119,8 +132,11 @@ export default function AddPost() {
                             type="file"
                             name="image"
                             id="image"
+                            invalid={validationError.image}
                             onChange={handleFileChange}
+                           
                         />
+                        <p className="text-red-300  text-sm ">{validationError.image}</p>
                     </FormGroup>
                     <FormGroup>
                         <Label htmlFor="category">Category</Label>
@@ -131,6 +147,7 @@ export default function AddPost() {
                             value={postData.categoryId}
                             onChange={handleChange}
                             required
+                            
                         >
                             <option  value="" disabled>Choose a category</option>
                             <option value="1">Music</option>
@@ -138,12 +155,18 @@ export default function AddPost() {
                             <option value="3">Food</option>
                         </Input>
                     </FormGroup>
-                    <FormGroup className="mt-3">
+                    <FormGroup className="mt-3 flex flex-row justify-between">
                         <button
                             type="submit"
-                            className="bg-blue-400 p-2 text-white font-semibold rounded-xl shadow-lg transition-transform hover:bg-blue-500 hover:scale-110"
+                            className="bg-blue-400 px-3 py-2 text-white font-semibold rounded-xl shadow-lg transition-transform hover:bg-blue-500 hover:scale-110"
                         >
                             Post
+                        </button>
+                        <button 
+                        type="button"
+                        onClick={handleCancel}
+                        className="bg-red-400 px-3 py-2 text-white font-semibold rounded-xl shadow-lg transition-transform hover:bg-red-500 hover:scale-110">
+                            Cancel
                         </button>
                     </FormGroup>
                 </Form>

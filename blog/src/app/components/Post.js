@@ -1,9 +1,9 @@
 "use client";
-import { useState, useEffect, forwardRef } from "react";
+import { useState, useEffect} from "react";
 import axios from "axios";
 import base_url from "../api/base_url";
 
- const  Post=forwardRef(({ post },ref) => {
+ const  Post=({ post }) => {
     const [image, setImage] = useState(null);
     const [user,setUser]=useState()
     const getToken = () => {
@@ -51,17 +51,6 @@ import base_url from "../api/base_url";
     return (
         <div className="flex justify-center">
             <div className="max-w-sm w-full h-auto rounded-md overflow-hidden shadow-lg bg-white m-4 cursor-pointer transition-transform hover:scale-105 hover:shadow-xl">
-                {/* Image Container */}
-                {image && (
-                    <div className=" w-full pb-2/3 bg-gray-100">
-                        <img
-                            className=" top-0 left-0 w-full h-full object-cover"
-                            src={image}
-                            alt={post.postTitle}
-                        />
-                    </div>
-                )}
-
                 <div className="px-6 py-4 h-auto flex flex-col justify-between">
                     {/* Post Date */}
                     <p className="text-gray-500 text-xs mb-2">
@@ -72,31 +61,49 @@ import base_url from "../api/base_url";
 
                     {user &&(
                         <p className="text-gray-700 text-sm mb-2">
-                           Post By: <span className="font-bold">{user.username}</span> 
+                           Posted by: <span className="font-semibold">{user.username}</span> 
                         </p>
                     )}
 
                     {/* Post Title */}
-                    <h2 className="font-bold text-xl text-gray-800 mb-2">
+                    <h2 className="font-bold text-xl text-gray-800 mb-2 line-clamp-2">
                         {post.postTitle}
                     </h2>
 
                     {/* Post Content (Truncated) */}
-                    <p className="text-gray-700 text-base mb-4 overflow-hidden">
-                        {post.content.length > 100
-                            ? `${post.content.substring(0, 100)}...`
-                            : post.content}
+                    <p className="text-gray-700 text-base mb-4 overflow-hidden line-clamp-3">
+                        {post.content.length > 99
+                            ?( <>
+                          {  `${post.content.substring(0, 100)}.....`}
+                          <button className="text-blue-300 text-xs hover:underline">
+                            Read More
+                          </button>
+                            </> 
+                            ): post.content}
                     </p>
 
                     {/* Read More Button */}
                     <div className="mt-auto">
-                        <button className="bg-blue-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-600 transition-all">
-                            Read More
-                        </button>
+                        
                     </div>
+                    {image && (
+                    <div className="mt-4  bg-gray-100 relative ">
+                        <img
+                            className=" w-full h-full object-contain transition-opacity hover:opacity-90"
+                            src={image}
+                            alt={post.postTitle}
+                        />
+                    </div>
+                )}
+                <div className="flex justify-between mt-3 ">
+                    <button>Like</button>
+                    <button>Comment</button>
                 </div>
+                </div>
+                 {/* Image Container */}
+                
             </div>
         </div>
     );
-});
+};
 export default Post;

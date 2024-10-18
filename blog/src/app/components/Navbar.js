@@ -20,6 +20,8 @@ const Navbar = () => {
     setUsername(localStorage.getItem('username'))
     if(token){
       setLoggedIn(true)
+    }else{
+      setLoggedIn(false)
     }
   },[])
  const handleLogout= async()=>{

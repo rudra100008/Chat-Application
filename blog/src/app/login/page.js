@@ -25,10 +25,12 @@ export default function Login() {
         .then((response) => {
             if (response && response.data) {
                 setUser({ username: "", password: "" });
-                const { token ,username,userId} = response.data;
+                console.log(response.data)
+                const { token ,username,userId,isTokenExpired} = response.data;
                 localStorage.setItem("token", token);
                 localStorage.setItem("username",username);
                 localStorage.setItem("userId",userId);
+                localStorage.setItem("isTokenExpired",isTokenExpired);
                 toast.success("Login Successful");
                 setTimeout(() => {
                    router.push("/home")

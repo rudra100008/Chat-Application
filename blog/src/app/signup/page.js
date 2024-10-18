@@ -75,6 +75,7 @@ export default function Signup() {
                             name="username"
                             value={user.username}
                             onChange={(e) => setUser({ ...user, username: e.target.value })}
+                            invalid={validationError.username}
                             placeholder="Enter username" />
                         <p className="text-red-500">{validationError.username}</p>
                     </FormGroup>
@@ -86,6 +87,7 @@ export default function Signup() {
                             name="email"
                             value={user.email}
                             onChange={(e) => setUser({ ...user, email: e.target.value })}
+                            invalid={validationError.email}
                             placeholder="Enter email" />
                         <p className="text-red-500">{validationError.email}</p>
                     </FormGroup>
@@ -97,6 +99,7 @@ export default function Signup() {
                             name="password"
                             value={user.password}
                             onChange={(e) => setUser({ ...user, password: e.target.value })}
+                            invalid={validationError.password}
                             placeholder="Enter password" />
                         <p className="text-red-500">{validationError.password}</p>
                     </FormGroup>
