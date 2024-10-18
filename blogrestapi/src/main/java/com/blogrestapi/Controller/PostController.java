@@ -61,7 +61,7 @@ public class PostController {
                                         BindingResult result,
                                         @RequestParam("userId") Integer userId,
                                         @RequestParam(value="categoryId",required = false) Integer categoryId,
-                                        @RequestPart("image") MultipartFile imageFile) {
+                                        @RequestPart(value="image",required = false) MultipartFile imageFile) {
         Map<String, Object> response = new HashMap<>();
 
         if (result.hasErrors()) {
