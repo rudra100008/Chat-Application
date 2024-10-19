@@ -28,7 +28,6 @@ export default function Login() {
                 console.log(response.data)
                 const { token ,username,userId,isTokenExpired} = response.data;
                 localStorage.setItem("token", token);
-                localStorage.setItem("username",username);
                 localStorage.setItem("userId",userId);
                 localStorage.setItem("isTokenExpired",isTokenExpired);
                 toast.success("Login Successful");
