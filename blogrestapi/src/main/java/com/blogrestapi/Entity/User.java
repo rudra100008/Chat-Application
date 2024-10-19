@@ -23,6 +23,9 @@ public class User implements UserDetails {
     private String username;
     private String email;
     private String password;
+    private String image;
+    private String phoneNumber;
+    private String description;
     private boolean isEnable;
     @DBRef
     private List<Post> post = new ArrayList<>();

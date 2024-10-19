@@ -53,7 +53,6 @@ public class AuthController {
         response.setToken(token);
         response.setUserId(user.getId());
         response.setUsername(user.getUsername());
-        response.setIsTokenExpired(isTokenExpired);
         return ResponseEntity.ok(response);
     }
     public void authenticate(String username, String password) {
@@ -68,9 +67,9 @@ public class AuthController {
     public ResponseEntity<?> register(@Valid @RequestBody UserDTO userDTO, BindingResult result)
     {
         Map<String,Object> response=new HashMap<>();
-        if (userDTO.getPassword().length()<3 || userDTO.getPassword().length()>16) {
-            result.rejectValue("password", "error.user","Password should be between 3 and 16 characters");
-        }
+//        if (userDTO.getPassword().length()<3 || userDTO.getPassword().length()>16) {
+//            result.rejectValue("password", "error.user","Password should be between 3 and 16 characters");
+//        }
         if (result.hasErrors()) {
             Map<String,Object> error=new HashMap<>();
             result.getFieldErrors().forEach(f->error.put(f.getField(), f.getDefaultMessage()));

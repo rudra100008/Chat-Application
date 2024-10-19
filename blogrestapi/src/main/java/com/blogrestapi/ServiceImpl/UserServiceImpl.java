@@ -47,7 +47,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDTO createUser(UserDTO userDTO) {
-        userDTO.setId((int) this.sequence.generateSequence("user_sequence"));//this generate news id
+        userDTO.setId((int) this.sequence.generateSequence("user_sequence"));//this generates news id
         if (this.userDao.existsByUsername(userDTO.getUsername())) {
             throw new AlreadyExistsException("username is already used");
         }
@@ -57,6 +57,11 @@ public class UserServiceImpl implements UserService {
         if ( userDTO.getRole()==null ) {
             Role role=new Role(2,"ROLE_USER");
             userDTO.setRole(role);
+        }
+        if (userDTO.getImage()== null){
+            userDTO.setImage("default.jpg");
+        }else{
+            userDTO.setImage(userDTO.getImage());
         }
       
         userDTO.setPassword(encoder.encode(userDTO.getPassword())); 
@@ -77,6 +82,11 @@ public class UserServiceImpl implements UserService {
         if ( user.getRole()==null ) {
             Role role=new Role(2,"ROLE_USER");
             user.setRole(role);
+        }
+        if(userDTO.getImage()==null){
+            user.setImage("default.jpg");
+        }else{
+            user.setImage(userDTO.getImage());
         }
        user.setUsername(userDTO.getUsername());
        user.setEmail(userDTO.getEmail());
@@ -104,6 +114,11 @@ public class UserServiceImpl implements UserService {
         }
         if (this.userDao.existsByEmail(user.getEmail())) {
             throw new AlreadyExistsException("Email is already used");
+        }
+        if(user.getImage()== null){
+            user.setImage("default.jpg");
+        }else {
+            user.setImage(user.getImage());
         }
         user.setId((int)this.sequence.generateSequence("user_sequence"));
         user.setPassword(this.encoder.encode(user.getPassword()));
