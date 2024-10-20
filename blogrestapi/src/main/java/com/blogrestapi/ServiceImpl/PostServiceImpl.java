@@ -38,11 +38,10 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PageResponse<PostDTO> getAllPost(int pageNumber,int pageSize,String sortBy,String sortDir) {
-        Sort sort=sortDir.equalsIgnoreCase("ascending")
-        ? Sort.by(sortBy).ascending()
-        : Sort.by(sortBy).descending();
-       
-        // the value of pageNumber start form 0 in the database
+
+        Sort sort= sortDir.equalsIgnoreCase("ascending") ?
+                Sort.by(sortBy).ascending() :
+                Sort.by(sortBy).descending();
         Pageable pageable=PageRequest.of(pageNumber,pageSize,sort);
         Page<Post> page=this.postDao.findAll(pageable);
         List<Post> allPost=page.getContent();
@@ -61,6 +60,7 @@ public class PostServiceImpl implements PostService {
         );
         return pageResponse;
     }
+
 
     @Override
     public PostDTO getPostById(int id) {

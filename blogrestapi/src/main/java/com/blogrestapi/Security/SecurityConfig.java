@@ -1,10 +1,10 @@
 package com.blogrestapi.Security;
 
+import com.blogrestapi.Service.TokenBlackListService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -12,6 +12,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -50,6 +51,9 @@ public class SecurityConfig {
     @Autowired
     private JwtAuthencticationFilter filter;
 
+    @Autowired
+    private TokenBlackListService tokenBlackListService;
+
     public SecurityConfig(UserDetailsService userDetailService, PasswordEncoder passwordEncoder) {
         this.userDetailService = userDetailService;
         this.passwordEncoder = passwordEncoder;
@@ -58,7 +62,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable()) // Disable CSRF
+                .csrf(AbstractHttpConfigurer::disable) // Disable CSRF
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(PUBLIC_URL).permitAll()
                         .anyRequest().authenticated())
@@ -106,6 +110,11 @@ public class SecurityConfig {
     @Bean
     public LogoutSuccessHandler logoutSuccessHandler(){
         return (request, response, authentication) -> {
+            String token =request.getHeader("Authorization");
+            if(token != null && token.startsWith("Bearer ")){
+                token=token.substring(7);
+                tokenBlackListService.blackListToken(token);
+            }
             response.setStatus(HttpServletResponse.SC_OK);
             response.getWriter().write("Logout successful");
         };

@@ -53,6 +53,7 @@ public class AuthController {
         response.setToken(token);
         response.setUserId(user.getId());
         response.setUsername(user.getUsername());
+        response.setIsTokenExpired(isTokenExpired);
         return ResponseEntity.ok(response);
     }
     public void authenticate(String username, String password) {

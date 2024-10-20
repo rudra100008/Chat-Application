@@ -2,6 +2,7 @@ package com.blogrestapi.Security;
 
 import java.io.IOException;
 
+import com.blogrestapi.Service.TokenBlackListService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -24,7 +25,8 @@ public class JwtAuthencticationFilter extends OncePerRequestFilter {
     private UserDetailService userDetailService;
     @Autowired
     private JWTTokenHelper jwtTokenHelper;
-
+    @Autowired
+    private TokenBlackListService tokenBlackListService;
     @Override
     protected void doFilterInternal(
         @NonNull HttpServletRequest request, 
@@ -38,6 +40,11 @@ public class JwtAuthencticationFilter extends OncePerRequestFilter {
        String token=null;
        if (authorizationHeader !=null && authorizationHeader.startsWith("Bearer ")) {
            token= authorizationHeader.substring(7);
+           if (tokenBlackListService.isTokenBlackListed(token)) {
+               response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+               response.getWriter().write("Token has been invalidated");
+               return; // Exit if the token is blacklisted
+           }
            try {
             username=this.jwtTokenHelper.getUsernameFromToken(token);
            }catch(IllegalArgumentException i)
@@ -50,6 +57,7 @@ public class JwtAuthencticationFilter extends OncePerRequestFilter {
            } catch (Exception e) {
              System.out.println(e.getLocalizedMessage());
            }
+
           
        }else{
         filterChain.doFilter(request, response);
