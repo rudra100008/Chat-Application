@@ -7,9 +7,9 @@ import Link from "next/link";
 import axios from "axios"; // Import axios
 import base_url from "../api/base_url";
 
-// Utility functions should be defined or imported if used
+
 const getUserId = () => {
-  // Logic to get the user id, maybe from local storage or elsewhere
+  
   return localStorage.getItem('userId');
 }
 
@@ -52,12 +52,14 @@ export default function Home() {
 
   useEffect(() => {
     const token = localStorage.getItem('token');
+   
     if (!token) {
       router.push("/");
     } else {
       getUserDetails(); // Fetch user details if token is present
     }
-  }, [router]);
+    
+  }, []);
 
   return (
     <div>

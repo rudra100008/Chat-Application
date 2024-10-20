@@ -5,17 +5,16 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Login from './login/page';
-import { useEffect,useState } from 'react';
+import { useEffect} from 'react';
+import { useRouter } from 'next/navigation';
 export default function Home() {
-  const [token,setToken]= useState(false);
+  const route =useRouter();
   useEffect(()=>{
-    const getToken=  localStorage.getItem("token");
-    if(getToken){
-      setToken(true)
-    }else{
-      setToken(false)
+    const isExpired =localStorage.getItem("isTokenExpired");
+    if(isExpired ==="true"){
+      route.push("/")
     }
-  })
+  },[route])
   return (
     <div>
       <ToastContainer
@@ -30,7 +29,7 @@ export default function Home() {
         pauseOnHover
         theme="dark" 
       />
-      { !token ? <Login/>: window.location.href="/home" }
+     <Login/>
     </div>
   );
 }

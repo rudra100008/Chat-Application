@@ -1,5 +1,5 @@
 "use client";
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Form, FormGroup, Input, Label } from "reactstrap";
 import base_url from "../api/base_url";
 import axios from "axios";
@@ -33,7 +33,7 @@ export default function Login() {
                 toast.success("Login Successful");
                 setTimeout(() => {
                    router.push("/home")
-                }, 2000);
+                }, 1000);
                 
             } else {
                 console.error("No data received from server");
@@ -57,6 +57,15 @@ export default function Login() {
         e.preventDefault();
         postFromServer();
     };
+    // useEffect(()=>{
+    //     const isExpired =localStorage.getItem("isTokenExpired");
+    //     if(isExpired === "true"){
+    //       router.push("/")
+    //       localStorage.removeItem("isTokenExpired")
+    //     }else{
+    //         router.push("/home")
+    //     }
+    //   },[router])
 
     return (
         <div className="min-h-screen items-center flex justify-center bg-gradient-to-r from-blue-300 to-purple-400">

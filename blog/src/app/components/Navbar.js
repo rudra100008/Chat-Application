@@ -35,11 +35,21 @@ const Navbar = ({ user }) => {
 
   const handleLogout = async () => {
     try {
-      const response = await axios.post(`${base_url}/logout`);
+      const token = localStorage.getItem('token');
+      const response = await axios.post(
+        `${base_url}/logout`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       if (response.status === 200) {
         localStorage.removeItem('token');
         localStorage.removeItem('username');
         localStorage.removeItem('userId');
+        localStorage.removeItem('isTokenExpired')
         setLoggedIn(false);
         toast.success("Logout Successful");
         setTimeout(() => {
@@ -52,6 +62,7 @@ const Navbar = ({ user }) => {
       console.log(error);
     }
   };
+  
 
   useEffect(() => {
     const token = getToken();
@@ -66,8 +77,9 @@ const Navbar = ({ user }) => {
     if (user.image) {
       getUserImageFromServer();
     }
+   
   }, [user]);
-
+  
   return (
     <nav className="bg-gray-800 p-4">
       <div className="container mx-auto flex justify-between items-center">
@@ -75,7 +87,7 @@ const Navbar = ({ user }) => {
           <div className="relative">
             <button
               className="text-gray-300 hover:text-white focus:outline-none"
-              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              onClick={() => setIsDropdownOpen((prevState)=>!prevState)}
             >
               <svg
                 className="w-6 h-6 mt-2"
@@ -94,7 +106,7 @@ const Navbar = ({ user }) => {
             </button>
             {isDropdownOpen && (
               <div className="absolute left-0 mt-2 rounded-lg shadow-lg bg-white w-32 overflow-hidden transition-all duration-500 ease-in">
-                <Link href="/" className="block no-underline text-gray-700 px-4 py-2 text-center rounded-lg focus:outline-none hover:bg-gray-100">
+                <Link href="/home" className="block no-underline text-gray-700 px-4 py-2 text-center rounded-lg focus:outline-none hover:bg-gray-100">
                   Home
                 </Link>
                 <Link href="/about" className="block no-underline text-gray-700 px-4 py-2 text-center rounded-lg hover:bg-gray-100">
@@ -110,7 +122,7 @@ const Navbar = ({ user }) => {
                     </Link>
                   </>
                 ) : (
-                  <Link  onClick={handleLogout} className="block no-underline text-gray-700 px-4 py-2 text-center rounded-lg hover:bg-gray-100">
+                  <Link href="/" onClick={handleLogout} className="block no-underline text-gray-700 px-4 py-2 text-center rounded-lg hover:bg-gray-100">
                     Logout
                   </Link>
                 )}

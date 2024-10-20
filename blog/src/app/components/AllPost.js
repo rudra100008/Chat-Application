@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import base_url from "../api/base_url";
 import Post from "./Post"; 
+import { useRouter } from "next/navigation";
 
 const AllPost = () => {
+    const router =useRouter();
     const [posts, setPosts] = useState([]);
     const [pageNumber, setPageNumber] = useState(0);
     const [loading, setLoading] = useState(false);
@@ -47,6 +49,9 @@ const AllPost = () => {
 
         } catch (error) {
             console.error("Error fetching posts:", error);
+            // if(error.response.status === 401){
+            //     router.push("/")
+            // }
         } finally {
             setLoading(false); 
         }
