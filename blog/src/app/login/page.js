@@ -26,7 +26,7 @@ export default function Login() {
             if (response && response.data) {
                 setUser({ username: "", password: "" });
                 console.log(response.data)
-                const { token ,username,userId,isTokenExpired} = response.data;
+                const { token ,userId,isTokenExpired} = response.data;
                 localStorage.setItem("token", token);
                 localStorage.setItem("userId",userId);
                 localStorage.setItem("isTokenExpired",isTokenExpired);
@@ -57,16 +57,6 @@ export default function Login() {
         e.preventDefault();
         postFromServer();
     };
-    // useEffect(()=>{
-    //     const isExpired =localStorage.getItem("isTokenExpired");
-    //     if(isExpired === "true"){
-    //       router.push("/")
-    //       localStorage.removeItem("isTokenExpired")
-    //     }else{
-    //         router.push("/home")
-    //     }
-    //   },[router])
-
     return (
         <div className="min-h-screen items-center flex justify-center bg-gradient-to-r from-blue-300 to-purple-400">
             <ToastContainer
@@ -111,8 +101,8 @@ export default function Login() {
                         />
                     </FormGroup>
                     <FormGroup>
-                        <button type="submit" className="bg-blue-400 p-2 text-white font-semibold rounded-xl shadow-lg transition-transform hover:bg-blue-500 hover:scale-110">
-                            Submit
+                        <button type="submit" className="bg-blue-400 p-2 text-white text-lg font-semibold rounded-xl shadow-lg transition-transform hover:bg-blue-500 hover:scale-110">
+                            Log In
                         </button>
                     </FormGroup>
                     <p className="mt-4 font-semibold text-sm text-center ">

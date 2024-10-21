@@ -2,17 +2,24 @@
 import { useState, useEffect} from "react";
 import axios from "axios";
 import base_url from "../api/base_url";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEllipsis } from "@fortawesome/free-solid-svg-icons";
 
- const  Post=({ post }) => {
+ const  Post=({ post, isUserPost}) => {
     const [image, setImage] = useState(null);
+    const [isOpen,setIsOpen]=useState(false);
     const [user,setUser]=useState()
     const getToken = () => {
         return localStorage.getItem("token");
     };
 
-    const fetchImage = () => {
+    const handleDelete=()=>{
+
+    }
+
+    const fetchImage = async () => {
         const token = getToken();
-        axios.get(`${base_url}/posts/image/${post.image}`, {
+        await axios.get(`${base_url}/posts/image/${post.image}`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -27,9 +34,9 @@ import base_url from "../api/base_url";
         });
     };
 
-    const fetchUserDetails=()=>{
+    const fetchUserDetails= async()=>{
         const token=getToken();
-        axios.get(`${base_url}/users/${post.userId}`,{
+        await axios.get(`${base_url}/users/${post.userId}`,{
             headers:{
                 Authorization:`Bearer ${token}`
             }
@@ -40,24 +47,49 @@ import base_url from "../api/base_url";
         })
     }
     useEffect(() => {
-        if (post.image) {
+        if (post?.image) {
             fetchImage();// Fetch the image only when the post has an image
         }
-        if(post.userId){
+        if(post?.userId){
             fetchUserDetails();
         }
-    }, [post.image,post.userId]);
+    }, [post?.image,post?.userId]);
 
     return (
         <div className="flex justify-center">
             <div className="max-w-sm w-full h-auto rounded-md overflow-hidden shadow-lg bg-white m-4 cursor-pointer transition-transform hover:scale-105 hover:shadow-xl">
                 <div className="px-6 py-4 h-auto flex flex-col justify-between">
                     {/* Post Date */}
+                    <div className="flex justify-between ">
                     <p className="text-gray-500 text-xs mb-2">
-                        {new Date(post.postDate).toLocaleString("en-US", {
+                        {new Date(post?.postDate).toLocaleString("en-US", {
                             weekday: 'short', year: 'numeric', month: 'long', day: 'numeric'
                         })}
                     </p>
+                    <div className="relative">
+                            {isUserPost && (
+                                <div>
+                                    <FontAwesomeIcon icon={faEllipsis} 
+                                    onClick={()=> setIsOpen((prevState)=> !prevState)} />
+                                    {isOpen && (
+                                        <div className="absolute right-0 top-6 mt-1 w-32 z-50 bg-white rounded-lg shadow-lg">
+                                            <p 
+                                                className="cursor-pointer hover:bg-gray-100 p-2" 
+                                                onClick={handleDelete}
+                                            >
+                                                Delete
+                                            </p>
+                                            <p className="cursor-pointer hover:bg-gray-100 p-2">
+                                                Edit
+                                            </p>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+
+                    
+                    </div>
 
                     {user &&(
                         <p className="text-gray-700 text-sm mb-2">
@@ -67,19 +99,19 @@ import base_url from "../api/base_url";
 
                     {/* Post Title */}
                     <h2 className="font-bold text-xl text-gray-800 mb-2 line-clamp-2">
-                        {post.postTitle}
+                        {post?.postTitle}
                     </h2>
 
                     {/* Post Content (Truncated) */}
                     <p className="text-gray-700 text-base mb-4 overflow-hidden line-clamp-3">
-                        {post.content.length > 99
+                        {post?.content.length > 99
                             ?( <>
-                          {  `${post.content.substring(0, 100)}.....`}
+                          {  `${post?.content.substring(0, 100)}.....`}
                           <button className="text-blue-300 text-xs hover:underline">
                             Read More
                           </button>
                             </> 
-                            ): post.content}
+                            ): post?.content}
                     </p>
 
                     {/* Read More Button */}
@@ -91,7 +123,7 @@ import base_url from "../api/base_url";
                         <img
                             className=" w-full h-full object-contain transition-opacity hover:opacity-90"
                             src={image}
-                            alt={post.postTitle}
+                            alt={post?.postTitle}
                         />
                     </div>
                 )}

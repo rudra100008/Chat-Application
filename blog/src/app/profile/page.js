@@ -4,6 +4,8 @@ import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import base_url from "../api/base_url";
 import { toast } from "react-toastify";
+import UserPost from "../components/UserPost";
+
 
 const getUserId = () => {
   return localStorage.getItem("userId");
@@ -16,6 +18,7 @@ const getToken = () => {
 const Profile = () => {
   const router = useRouter();
   const [imageUrl, setImageUrl] = useState("");
+  const [active ,setActive]=useState("posts");
   const [userDetails, setUserDetails] = useState({
     id: null,
     username: "",
@@ -27,6 +30,7 @@ const Profile = () => {
 
   const getUserDetails = () => {
     const id = getUserId();
+  
     if (!id) {
       console.log("No user ID found");
       return;
@@ -107,7 +111,7 @@ const Profile = () => {
   }, [userDetails,router]);
 
   return (
-    <div className=" h-screen bg-sky-200">
+    <div className=" min-h-screen overflow-hidden bg-sky-200">
       <div className="max-w-4xl w-full mx-auto bg-white rounded-lg shadow-lg p-6 text-center">
         <div className="w-48 h- mx-auto">
         <img
@@ -142,10 +146,22 @@ const Profile = () => {
         </div>
       </div>
       
-      <div className="bg-white max-w-4xl w-full mx-auto mt-3 flex justify-center items-center space-x-3 rounded-lg">
-        <p className="hover:underline decoration-gray-600">Posts</p>
-        <p>More Details</p>
+      <div className="bg-gray-300 max-w-4xl w-full mx-auto mt-3 p-3 flex justify-center items-center space-x-3 rounded-lg">
+        <p href="/userPost" className={`${active === "posts" ? "underline decoration-blue-500  text-blue-500 underline-offset-4 decoration-2" :"hover:underline decoration-gray-400 text-gray-500 underline-offset-4 decoration-2"}
+          text-lg font-semibold cursor-pointer`}
+          onClick={()=>setActive("posts")}>
+          Posts
+        </p>
+        <p href="/" className={`${active === "details" ? "underline decoration-blue-500  text-blue-500 underline-offset-4 decoration-2" :"hover:underline decoration-gray-400 text-gray-500 underline-offset-4 decoration-2"}
+          text-lg font-semibold  cursor-pointer`}
+        onClick={()=> setActive("details")}>
+          More Details
+        </p>
       </div>
+      {
+        active === "posts" ? <UserPost/>: null
+        
+      }
     </div>
   );
 };

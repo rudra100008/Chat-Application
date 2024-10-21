@@ -6,6 +6,7 @@ import Navbar from "../components/Navbar";
 import Link from "next/link";
 import axios from "axios"; // Import axios
 import base_url from "../api/base_url";
+import { ToastContainer } from "react-toastify";
 
 
 const getUserId = () => {
@@ -47,6 +48,9 @@ export default function Home() {
       setUserDetails({ id, username, email, image, phoneNumber, description });
     }).catch((error) => {
       console.log(error.response?.data || error.message);
+      if(error.response.status === 401){
+        console.log(error.response.data)
+      }
     });
   };
 
@@ -62,8 +66,20 @@ export default function Home() {
   }, []);
 
   return (
-    <div>
+    <div className="">
       <Navbar user={userDetails} />
+      <ToastContainer
+                position="top-right"
+                autoClose={3000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="dark"
+            />
       <div className="flex items-center justify-center mb-5">
         <Link
           className="no-underline mt-2 inline-block px-5 py-3 font-semibold text-white bg-blue-100 rounded-xl shadow-md hover:bg-blue-500 transition duration-200 hover:scale-105"

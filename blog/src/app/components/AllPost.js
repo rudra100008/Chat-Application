@@ -3,6 +3,7 @@ import axios from "axios";
 import base_url from "../api/base_url";
 import Post from "./Post"; 
 import { useRouter } from "next/navigation";
+import { toast, ToastContainer } from "react-toastify";
 
 const AllPost = () => {
     const router =useRouter();
@@ -49,15 +50,18 @@ const AllPost = () => {
 
         } catch (error) {
             console.error("Error fetching posts:", error);
-            // if(error.response.status === 401){
-            //     router.push("/")
-            // }
+            if(error.response.status=== 401){
+                toast.error("Session has expired, please log in again")
+                setTimeout(()=>{
+                    router.push("/");
+                },1000)
+            }
         } finally {
             setLoading(false); 
         }
     };
 
-    // Fetch posts only when pageNumber changes or when hasMorePosts changes
+    
     useEffect(() => {
         if (hasMorePosts && !loading) {
             fetchPosts();
@@ -97,16 +101,16 @@ const AllPost = () => {
     }, [hasMorePosts, loading]);
 
     return (
-        <div>
+        <div className="">
             {posts.length > 0 ? (
                 posts.map((post,index) => (
-                    <Post key={post.id || index} post={post} /> // Use post.id as key to ensure uniqueness
+                    <Post key={post.id || index} post={post} isUserPost={false} /> // Use post.id as key to ensure uniqueness
                 ))
             ) : (
                 <p className="text-center font-semibold">No posts available</p> // Fallback for no posts
             )}
             {loading && hasMorePosts && <p className="text-center font-semibold">Loading more posts...</p>}
-            {!hasMorePosts && <p>No more posts available.</p>}
+            {!hasMorePosts && <p className="bg-slate-300 p-2 mt-5 text-white text-xl text-center font-bold ">No more posts available.</p>}
         </div>
     );
 };
