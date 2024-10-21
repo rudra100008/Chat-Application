@@ -39,24 +39,25 @@ public class PostServiceImpl implements PostService {
     @Override
     public PageResponse<PostDTO> getAllPost(int pageNumber,int pageSize,String sortBy,String sortDir) {
 
-        Sort sort= sortDir.equalsIgnoreCase("ascending") ?
-                Sort.by(sortBy).ascending() :
-                Sort.by(sortBy).descending();
-        Pageable pageable=PageRequest.of(pageNumber,pageSize,sort);
+        Sort sort=sortDir.equalsIgnoreCase("ascending")
+                ?Sort.by(sortBy).ascending()
+                :Sort.by(sortBy).descending();
+        Pageable pageable=PageRequest.of(pageNumber, pageSize,sort);
         Page<Post> page=this.postDao.findAll(pageable);
-        List<Post> allPost=page.getContent();
-        List<PostDTO> getAllPost= allPost.stream().map(post -> modelMapper.map(post, PostDTO.class)).toList();
+        List<PostDTO> allPost=page.getContent().stream().map(
+                e->modelMapper.map(e, PostDTO.class)
+        ).toList();
         long totalElement=page.getTotalElements();
         int totalPage=page.getTotalPages();
         boolean lastPage=page.isLast();
         PageResponse<PostDTO> pageResponse=new PageResponse<>(
-            "OK(200)",
-            getAllPost,
-            pageSize,
-            pageNumber,
-            totalPage,
-            totalElement,
-            lastPage
+                "OK(200)",
+                allPost,
+                pageSize,
+                pageNumber,
+                totalPage,
+                totalElement,
+                lastPage
         );
         return pageResponse;
     }

@@ -45,6 +45,11 @@ public class JwtAuthencticationFilter extends OncePerRequestFilter {
                response.getWriter().write("Token has been invalidated");
                return; // Exit if the token is blacklisted
            }
+           if(jwtTokenHelper.isTokenExpired(token)){
+               response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+               response.getWriter().write("Token has expired");
+               return; //exit if the token has expired
+           }
            try {
             username=this.jwtTokenHelper.getUsernameFromToken(token);
            }catch(IllegalArgumentException i)

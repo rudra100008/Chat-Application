@@ -24,7 +24,6 @@ public class PostDTO {
     @NotBlank(message = "Content is mandatory")
     @Size(min = 10, message = "Content must be at least 10 characters long")
     private String content;
-    @NotBlank(message = "Image URL is mandatory")
     private String image;
 
     // @NotNull(message = "Post date cannot be null")
