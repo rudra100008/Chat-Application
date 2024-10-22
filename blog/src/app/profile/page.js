@@ -62,6 +62,11 @@ const Profile = () => {
       })
       .catch((error) => {
         console.log(error.response?.data || error.message);
+        if(error.response.status === 401){
+          localStorage.removeItem("token")
+          localStorage.removeItem("userId")
+          router.push("/")
+        }
       });
   };
 
@@ -82,6 +87,11 @@ const Profile = () => {
         if (!userDetails.image) {
           toast.error("No image found for this user.");
         }
+        if(error.response.status === 401){
+          localStorage.removeItem("token")
+          localStorage.removeItem("userId")
+          router.push("/")
+        }
       });
   };
 
@@ -101,14 +111,7 @@ const Profile = () => {
     if (userDetails.image) {
       getUserImageFromServer();
     }
-    const isTokenExpired =localStorage.getItem("isTokenExpired")
-    if(isTokenExpired === "true"){
-      router.push("/")
-      localStorage.removeItem("isTokenExpired")
-    }else{
-      router.push("/profile")
-    }
-  }, [userDetails,router]);
+  }, [userDetails]);
 
   return (
     <div className=" min-h-screen overflow-hidden bg-sky-200">

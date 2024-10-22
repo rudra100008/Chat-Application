@@ -50,18 +50,23 @@ const AllPost = () => {
 
         } catch (error) {
             console.error("Error fetching posts:", error);
-            if(error.response.status=== 401){
-                toast.error("Session has expired, please log in again")
-                setTimeout(()=>{
-                    router.push("/");
-                },1000)
-            }
+            if (error.response?.status === 401) {
+                localStorage.removeItem("userId");
+                localStorage.removeItem("token");
+              }
         } finally {
             setLoading(false); 
         }
     };
 
-    
+    useEffect(()=>{
+        if(!getToken()){
+            localStorage.setItem("message", "true");
+            setTimeout(()=>{
+                router.push("/")
+            },500)
+        }
+    },[getToken()])
     useEffect(() => {
         if (hasMorePosts && !loading) {
             fetchPosts();

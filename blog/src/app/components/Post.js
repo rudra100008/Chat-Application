@@ -5,7 +5,11 @@ import base_url from "../api/base_url";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsis } from "@fortawesome/free-solid-svg-icons";
 
- const  Post=({ post, isUserPost}) => {
+const getUserId=()=>{
+    return localStorage.getItem("userId")
+}
+
+ const  Post=({ post, isUserPost,onDelete}) => {
     const [image, setImage] = useState(null);
     const [isOpen,setIsOpen]=useState(false);
     const [user,setUser]=useState()
@@ -13,7 +17,23 @@ import { faEllipsis } from "@fortawesome/free-solid-svg-icons";
         return localStorage.getItem("token");
     };
 
-    const handleDelete=()=>{
+    const handleDelete = () => {
+        axios.delete(`${base_url}/posts/${post.postId}`, {
+            headers: {
+                Authorization: `Bearer ${getToken()}`
+            }
+        })
+        .then((response) => {
+            console.log(response.data);
+            onDelete(post.postId); // Call the delete handler passed from the parent
+            toast.success("Post deleted successfully"); // Show success toast
+        })
+        .catch((error) => {
+            console.error("Error deleting post:", error);
+            toast.error("Failed to delete post"); // Show error toast
+        });
+    };
+    const handleEdit=()=>{
 
     }
 
@@ -72,14 +92,16 @@ import { faEllipsis } from "@fortawesome/free-solid-svg-icons";
                                     <FontAwesomeIcon icon={faEllipsis} 
                                     onClick={()=> setIsOpen((prevState)=> !prevState)} />
                                     {isOpen && (
-                                        <div className="absolute right-0 top-6 mt-1 w-32 z-50 bg-white rounded-lg shadow-lg">
+                                        <div className="absolute right-0 top-6 mt-1 w-32 z-auto bg-white rounded-lg shadow-lg">
                                             <p 
                                                 className="cursor-pointer hover:bg-gray-100 p-2" 
                                                 onClick={handleDelete}
                                             >
                                                 Delete
                                             </p>
-                                            <p className="cursor-pointer hover:bg-gray-100 p-2">
+                                            <p 
+                                            className="cursor-pointer hover:bg-gray-100 p-2"
+                                            onClick={handleEdit}>
                                                 Edit
                                             </p>
                                         </div>

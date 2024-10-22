@@ -16,6 +16,12 @@ export default function UserPost() {
         return localStorage.getItem("token");
     };
 
+    const handleDeletePost = (postId) => {
+        setUserPost((prevPosts) => {
+            return prevPosts.filter((post) => post.postId !== postId); // Correctly return the filtered array
+        });
+    };
+    
     const getUserPostFromServer = async () => {
         await axios
             .get(`${base_url}/posts/user/${getUserId()}`, {
@@ -77,8 +83,12 @@ export default function UserPost() {
     return (
         <div className="max-w-4xl w-full mx-auto my-3">
             {userPost.length > 0 ? (
-                <div className="flex ">
-                  {  userPost.map((post, key) => <Post post={post} key={key} isUserPost={true} />)}
+                <div className="flex flex-wrap -mx-2 ">
+                  {  userPost.map((post, key) => (
+                    <div className="w-full sm:w-1/2 px-2 mb-4" key={post.postId}>
+                         <Post post={post}  isUserPost={true} onDelete={handleDeletePost} />
+                    </div>
+                    ))}
                 </div>
 
             ) : (

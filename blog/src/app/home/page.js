@@ -6,7 +6,7 @@ import Navbar from "../components/Navbar";
 import Link from "next/link";
 import axios from "axios"; // Import axios
 import base_url from "../api/base_url";
-import { ToastContainer } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
 
 
 const getUserId = () => {
@@ -31,38 +31,35 @@ export default function Home() {
     description:""
   });
 
-  const getUserDetails = () => {
-    const id = getUserId(); // Get user ID from utility function or state
-    if (!id) {
+  const getUserDetails = async () => {
+    const userId = getUserId(); 
+    if (!userId) {
       console.log("No user ID found");
       return;
     }
-
-    axios.get(`${base_url}/users/${id}`, {
-      headers: {
-        Authorization: `Bearer ${getToken()}`
-      }
-    }).then((response) => {
-      console.log(response.data);
+  
+    try {
+      const response = await axios.get(`${base_url}/users/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${getToken()}`,
+        },
+      });
+  
       const { id, username, email, image, phoneNumber, description } = response.data;
       setUserDetails({ id, username, email, image, phoneNumber, description });
-    }).catch((error) => {
+    } catch (error) {
       console.log(error.response?.data || error.message);
-      if(error.response.status === 401){
-        console.log(error.response.data)
+      if (error.response?.status === 401) {
+        localStorage.removeItem("userId");
+        localStorage.removeItem("token");
+      
       }
-    });
+    }
   };
+  
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
-   
-    if (!token) {
-      router.push("/");
-    } else {
-      getUserDetails(); // Fetch user details if token is present
-    }
-    
+     getUserDetails();
   }, []);
 
   return (
