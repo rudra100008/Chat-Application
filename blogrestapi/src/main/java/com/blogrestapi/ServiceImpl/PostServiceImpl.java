@@ -87,24 +87,7 @@ public class PostServiceImpl implements PostService {
         return modelMapper.map(savedPost, PostDTO.class);
     }
 
-    @Override
-    public PostDTO updatePostById(int id, PostDTO postDTO, int userId, int categoryId) {
-        Post post = this.postDao.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Post not found with id: " + id));
-        User user = this.userDao.findById(userId)
-                .orElseThrow(() -> new ResourceNotFoundException("User not found by userId: " + userId));
-        Category category = this.categoryDao.findById(categoryId)
-                .orElseThrow(() -> new ResourceNotFoundException("Category not found with categoryId: " + categoryId));
-
-        post.setPostTitle(postDTO.getPostTitle());
-        post.setContent(postDTO.getContent());
-        post.setImage(postDTO.getImage() != null ? postDTO.getImage() : "default.jpg");
-        post.setPostDate(new Date());
-        post.setUser(user);
-        post.setCategory(category);
-        Post updatePost = this.postDao.save(post);
-        return modelMapper.map(updatePost, PostDTO.class);
-    }
+//
 
     @Override
     public void deletePostById(int id) {

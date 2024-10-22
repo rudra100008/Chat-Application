@@ -122,7 +122,7 @@ public class PostController {
             response.put("message", error);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
-        PostDTO updatePost = this.postService.updatePostById(id, postDTO, userId, categoryId);
+        PostDTO updatePost = this.postService.updatePostField(id, postDTO, userId, categoryId);
         return ResponseEntity.ok(updatePost);
     }
 
@@ -138,23 +138,23 @@ public class PostController {
     }
 
     // handler for patching the post
-    @PatchMapping("/posts/{id}")
-    public ResponseEntity<?> update(@PathVariable("id") int id,
-            @Valid @RequestBody PostDTO postDTO,
-            BindingResult result,
-            @RequestParam("userId") int userId,
-            @RequestParam("categoryId") int categoryId) {
-        Map<String, Object> response = new HashMap<>();
-        if (result.hasErrors()) {
-            Map<String, Object> error = new HashMap<>();
-            result.getFieldErrors().forEach(err -> error.put(err.getField(), err.getDefaultMessage()));
-            response.put("status", "BAD_REQUEST(400)");
-            response.put("message", error);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-        }
-        PostDTO updatePost = this.postService.updatePostField(id, postDTO, userId, categoryId);
-        return ResponseEntity.ok(updatePost);
-    }
+//    @PatchMapping("/posts/{id}")
+//    public ResponseEntity<?> update(@PathVariable("id") int id,
+//            @Valid @RequestBody PostDTO postDTO,
+//            BindingResult result,
+//            @RequestParam("userId") int userId,
+//            @RequestParam("categoryId") int categoryId) {
+//        Map<String, Object> response = new HashMap<>();
+//        if (result.hasErrors()) {
+//            Map<String, Object> error = new HashMap<>();
+//            result.getFieldErrors().forEach(err -> error.put(err.getField(), err.getDefaultMessage()));
+//            response.put("status", "BAD_REQUEST(400)");
+//            response.put("message", error);
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+//        }
+//        PostDTO updatePost = this.postService.updatePostField(id, postDTO, userId, categoryId);
+//        return ResponseEntity.ok(updatePost);
+//    }
 
     // get post of a particular user by using id
     @GetMapping("posts/user/{userId}")
@@ -203,7 +203,7 @@ public class PostController {
             postDTO.setImage(fileName);
             
             // Update the post with the image
-            PostDTO updatedPost = this.postService.updatePostById(postId, postDTO, postDTO.getUserId(), postDTO.getCategoryId());
+            PostDTO updatedPost = this.postService.updatePostField(postId, postDTO, postDTO.getUserId(), postDTO.getCategoryId());
             
             // Return the updated post with the image
             return ResponseEntity.status(HttpStatus.OK).body(updatedPost);
