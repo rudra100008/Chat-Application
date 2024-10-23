@@ -65,7 +65,8 @@ public class BlogController {
 
     // this handler get the input from the user and post the data to database
     @PostMapping("/users")
-    public ResponseEntity<?> postUser(@Valid @RequestBody UserDTO user, BindingResult result) {
+    public ResponseEntity<?> postUser(@Valid @RequestPart("user") UserDTO user, BindingResult result
+    ,@RequestPart(value = "image",required = false) MultipartFile imageFile) {
         Map<String, Object> response = new HashMap<>();
         user.setEnable(true);
         String rawPassword=user.getPassword();
@@ -81,6 +82,21 @@ public class BlogController {
             response.put("message",errorMessage);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
+        String image= null;
+        try{
+            image = this.fileService.uploadFile(imagePath,imageFile);
+        }catch (IOException e) {
+             // Log the exception
+            response.put("status", "INTERNAL_SERVER_ERROR(500)");
+            response.put("message", "Image upload failed: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        } catch (Exception e) {
+             // Log unexpected exceptions
+            response.put("status", "INTERNAL_SERVER_ERROR(500)");
+            response.put("message", "An unexpected error occurred: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+        user.setImage(image);
         UserDTO saveUser = this.userService.createUser(user);
         response.put("message", "User inserted successfully");
         response.put("status", "CREATED(201)");
@@ -100,7 +116,11 @@ public class BlogController {
     }
 
     @PutMapping("/users/{id}")
-    public ResponseEntity<?> putUserById(@PathVariable("id") int id,@Valid @RequestBody UserDTO user,BindingResult result) {
+    public ResponseEntity<?> putUserById(@PathVariable("id") int id,@Valid @RequestPart("user") UserDTO user,
+                                         BindingResult result,
+                                         @RequestPart(value="image",required = false) MultipartFile imageFile) {
+
+
         Map<String,Object> response=new HashMap<>();
         if (result.hasErrors()) {
             Map<String,Object> fieldError=new HashMap<>();
@@ -109,6 +129,21 @@ public class BlogController {
             response.put("message", fieldError);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
+        String image= null;
+        try{
+            image = this.fileService.uploadFile(imagePath,imageFile);
+        }catch (IOException e) {
+             // Log the exception
+            response.put("status", "INTERNAL_SERVER_ERROR(500)");
+            response.put("message", "Image upload failed: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        } catch (Exception e) {
+           // Log unexpected exceptions
+            response.put("status", "INTERNAL_SERVER_ERROR(500)");
+            response.put("message", "An unexpected error occurred: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+        user.setImage(image);
         UserDTO updatedUser = this.userService.updateUserById(id, user);
         return ResponseEntity.ok(updatedUser);
     }
