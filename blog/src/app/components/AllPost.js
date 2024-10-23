@@ -1,10 +1,13 @@
+"use client"
 import { useEffect, useState } from "react";
 import axios from "axios";
 import base_url from "../api/base_url";
 import Post from "./Post"; 
 import { useRouter } from "next/navigation";
-import { toast, ToastContainer } from "react-toastify";
 
+const getToken = () => {
+    return localStorage.getItem("token");
+};
 const AllPost = () => {
     const router =useRouter();
     const [posts, setPosts] = useState([]);
@@ -12,13 +15,11 @@ const AllPost = () => {
     const [loading, setLoading] = useState(false);
     const [hasMorePosts, setHasMorePosts] = useState(true); 
 
-    const getToken = () => {
-        return localStorage.getItem("token");
-    };
+    
 
     const fetchPosts = async () => {
         if (loading || !hasMorePosts) return; 
-
+    
         setLoading(true); 
         try {
             const token = getToken();
@@ -31,42 +32,32 @@ const AllPost = () => {
                     pageSize: 3, 
                 },
             });
-
+    
             console.log(response.data);
             const { data, totalPage, pageNumber: currentPage } = response.data;
-            console.log("page Number is " + currentPage);
-
-            // Append the new posts to the existing ones
             setPosts((prevPosts) => {
                 const existingPostIds = new Set(prevPosts.map(post => post.postId));
                 const newPosts = data.filter(post => !existingPostIds.has(post.postId)); 
                 return [...prevPosts, ...newPosts]; 
             });
-
-            // If no more posts or we've reached the last page
+    
             if (data.length === 0 || currentPage >= totalPage - 1) {
-                setHasMorePosts(false); // No more posts to load
+                setHasMorePosts(false);
             }
-
+    
         } catch (error) {
             console.error("Error fetching posts:", error);
             if (error.response?.status === 401) {
-                localStorage.removeItem("userId");
-                localStorage.removeItem("token");
-              }
+                localStorage.setItem("message", "Session expired. Please log in again.");
+                setTimeout(() => {
+                    router.push("/"); // Redirect to login page
+                }, 1000); 
+            }
         } finally {
             setLoading(false); 
         }
     };
-
-    useEffect(()=>{
-        if(!getToken()){
-            localStorage.setItem("message", "true");
-            setTimeout(()=>{
-                router.push("/")
-            },500)
-        }
-    },[getToken()])
+    
     useEffect(() => {
         if (hasMorePosts && !loading) {
             fetchPosts();

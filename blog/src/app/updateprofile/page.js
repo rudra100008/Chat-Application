@@ -1,61 +1,73 @@
-"use client";
-import axios from "axios";
-import { Fragment, useState } from "react";
-import { toast, ToastContainer } from "react-toastify";
+"use client"
+import React, { Fragment, useState } from 'react'
+import { toast, ToastContainer } from 'react-toastify';
 import { Form, FormGroup, Input, Label } from "reactstrap";
 import base_url from "../api/base_url";
 import Link from "next/link";
+import axios from 'axios';
 
-export default function Signup() {
+export default function UpdateProfile() {
+    const getToken = () => {
+        return localStorage.getItem('token')
+    }
+    const getUserId = () => {
+        return localStorage.getItem('userId')
+    }
+    const handleFileChange=(e)=>{
+        setUser({...user,image:e.target.files[0]})
+    }
     const [user, setUser] = useState({
         username: "",
         email: "",
-        password: "",
+        password :"",
         phoneNumber: "",
-        description: ""
-    });
-
+        description: "",
+        image : null
+    })
     const [validationError, setValidationError] = useState({
         username: "",
         email: "",
-        password: "",
+        password :"",
         phoneNumber: "",
-        description: ""
-    });
-
-    const postUserToServer = () => {
-        axios.post(`${base_url}/register`, user).then(
-            (response) => {
-                console.log(response.data);
-                setUser({ username: "", email: "", password: "", phoneNumber: "", description: "" });
-                toast.success(response.data.message);
-                setValidationError({});
-                setTimeout(() => {
-                    window.location.href = "/";
-                }, 1000);
-            }).catch((error) => {
-                console.log(error.response.data);
+        description: "",
+        image:""
+    })
+    const updateProfile = () => {
+        const formData =new FormData();
+        formData.append("user", new Blob([JSON.stringify({
+            username : user.username,
+            email:user.email,
+            password :user.password,
+            phoneNumber: user.phoneNumber,
+            description: user.description
+        })],{type : "application/json"}))
+        formData.append("image",user.image)
+        axios.put(`${base_url}/users/${getUserId()}`, formData, {
+            headers: {
+                Authorization: `Bearer ${getToken()}`
+            }
+        }).then((response) => {
+            console.log(response.data);
+            setUser({ username: "", email: "", password:"", phoneNumber: "", description: "" })
+            toast.success("Profile Updated")
+            setValidationError({})
+        })
+            .catch((error) => {
+                console.log(error.response.data)
                 if (error.response.status === 400) {
                     const { message } = error.response.data;
-                    if (typeof message === 'string') {
-                        toast.error(message);
-                    } else if (typeof message === 'object') {
-                        setValidationError(message);
-                    }
                     setValidationError(message);
                 } else {
-                    toast.error("Unexpected error occurred.");
+                    toast.error("Unexcepted error occured")
                 }
-            });
-    };
-
-    const handleForm = (e) => {
+            })
+    }
+    const handleUpdate = (e) => {
         e.preventDefault();
-        postUserToServer();
-    };
-
+        updateProfile();
+    }
     return (
-        <div className="min-h-screen items-center flex justify-center bg-gradient-to-r from-blue-300 to-purple-400">
+        <div className="min-h-screen items-center flex justify-center">
             <ToastContainer
                 position="top-right"
                 autoClose={3000}
@@ -69,7 +81,7 @@ export default function Signup() {
                 theme="dark"
             />
             <Fragment>
-                <Form noValidate onSubmit={handleForm} className="bg-white max-w-md w-full p-8 rounded-lg shadow-lg">
+                <Form noValidate onSubmit={handleUpdate} className="bg-white max-w-md w-full p-8 rounded-lg shadow-lg">
                     <h3 className="text-center mb-4">Create your account</h3>
 
                     <FormGroup>
@@ -143,6 +155,19 @@ export default function Signup() {
                     </FormGroup>
 
                     <FormGroup>
+                        <Label htmlFor="image">Image</Label>
+                        <Input
+                            type="file"
+                            name="image"
+                            id="image"
+                            invalid={validationError.image}
+                            onChange={handleFileChange}
+
+                        />
+                        <p className="text-red-300  text-sm ">{validationError.image}</p>
+                    </FormGroup>
+
+                    <FormGroup>
                         <button type="Submit" className="bg-blue-400 p-2 text-white font-semibold rounded-xl shadow-lg transition-transform hover:bg-blue-500 hover:scale-110">
                             Signup
                         </button>
@@ -154,5 +179,5 @@ export default function Signup() {
                 </Form>
             </Fragment>
         </div>
-    );
+    )
 }

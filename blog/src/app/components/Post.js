@@ -4,10 +4,8 @@ import axios from "axios";
 import base_url from "../api/base_url";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEllipsis } from "@fortawesome/free-solid-svg-icons";
+import { toast, ToastContainer } from "react-toastify";
 
-const getUserId=()=>{
-    return localStorage.getItem("userId")
-}
 
  const  Post=({ post, isUserPost,onDelete}) => {
     const [image, setImage] = useState(null);
@@ -33,7 +31,7 @@ const getUserId=()=>{
             toast.error("Failed to delete post"); // Show error toast
         });
     };
-    const handleEdit=()=>{
+    const handlePostEdit=()=>{
 
     }
 
@@ -77,7 +75,20 @@ const getUserId=()=>{
 
     return (
         <div className="flex justify-center">
+             <ToastContainer
+                position="top-right"
+                autoClose={3000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="dark"
+            />
             <div className="max-w-sm w-full h-auto rounded-md overflow-hidden shadow-lg bg-white m-4 cursor-pointer transition-transform hover:scale-105 hover:shadow-xl">
+
                 <div className="px-6 py-4 h-auto flex flex-col justify-between">
                     {/* Post Date */}
                     <div className="flex justify-between ">
@@ -101,7 +112,7 @@ const getUserId=()=>{
                                             </p>
                                             <p 
                                             className="cursor-pointer hover:bg-gray-100 p-2"
-                                            onClick={handleEdit}>
+                                            onClick={handlePostEdit}>
                                                 Edit
                                             </p>
                                         </div>

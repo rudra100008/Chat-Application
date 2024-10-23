@@ -18,7 +18,7 @@ export default function UserPost() {
 
     const handleDeletePost = (postId) => {
         setUserPost((prevPosts) => {
-            return prevPosts.filter((post) => post.postId !== postId); // Correctly return the filtered array
+            prevPosts.filter((post) => post.postId !== postId); // Correctly return the filtered array
         });
     };
     
@@ -82,7 +82,7 @@ export default function UserPost() {
 
     return (
         <div className="max-w-4xl w-full mx-auto my-3">
-            {userPost.length > 0 ? (
+            {Array.isArray(userPost) && userPost.length > 0 ? (
                 <div className="flex flex-wrap -mx-2 ">
                   {  userPost.map((post, key) => (
                     <div className="w-full sm:w-1/2 px-2 mb-4" key={post.postId}>

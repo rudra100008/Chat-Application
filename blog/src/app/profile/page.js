@@ -5,6 +5,8 @@ import React, { useEffect, useState } from "react";
 import base_url from "../api/base_url";
 import { toast } from "react-toastify";
 import UserPost from "../components/UserPost";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft, faArrowRightFromBracket } from "@fortawesome/free-solid-svg-icons";
 
 
 const getUserId = () => {
@@ -27,6 +29,26 @@ const Profile = () => {
     phoneNumber: "",
     description: "",
   });
+
+
+  const handleGoBack=()=>{
+    router.back();
+  }
+  const handleLogout=()=>{
+    const token = getToken();
+    axios.get(`${base_url}/logout`,{
+      headers:{
+        Authorization : `Bearer ${token}`
+      }
+    }).then((response)=>{
+      console.log(response.data);
+      localStorage.removeItem('token');
+      localStorage.removeItem('userId');
+      router.push("/")
+    }).catch((error)=>{
+      console.log(error.response)
+    })
+  }
 
   const getUserDetails = () => {
     const id = getUserId();
@@ -98,6 +120,9 @@ const Profile = () => {
   const handleAddPost=()=>{
    router.push("/addPost")
   }
+  const handleProfileEdit=()=>{
+   router.push("/updateprofile")
+  }
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -116,12 +141,28 @@ const Profile = () => {
   return (
     <div className=" min-h-screen overflow-hidden bg-sky-200">
       <div className="max-w-4xl w-full mx-auto bg-white rounded-lg shadow-lg p-6 text-center">
-        <div className="w-48 h- mx-auto">
+        <div className="flex">
+          <div>
+            <button className="hover:bg-gray-300 rounded-xl shadow-lg p-2 hover:text-amber-500 " 
+            onClick={handleGoBack}>
+              <FontAwesomeIcon icon={faArrowLeft} className="" />
+              <span className=""> Go Back</span> 
+            </button>
+          </div>
+        <div className="w-48  mx-auto">
         <img
           className=" rounded-full mb-4 border-4 border-gray-200"
           src={imageUrl}
           alt={userDetails.username}
         />
+        </div>
+        <div>
+          <button className="hover:bg-gray-300 rounded-xl shadow-lg p-2 hover:text-rose-500 " 
+          onClick={handleLogout}>
+            <FontAwesomeIcon icon={faArrowRightFromBracket} />
+            <span className=""> Logout</span> 
+          </button>
+        </div>
         </div>
         
         <h3 className="text-4xl font-semibold text-gray-700 hover:text-gray-500 hover:font-bold">{userDetails.username}</h3>
@@ -138,7 +179,9 @@ const Profile = () => {
           
         </div>
         <div className="mt-6">
-          <button className="bg-cyan-300 text-white font-semibold px-4 py-2 rounded-lg shadow-lg hover:bg-pink-600 transition-transform hover:scale-105">
+          <button 
+          onClick={handleProfileEdit}
+          className="bg-cyan-300 text-white font-semibold px-4 py-2 rounded-lg shadow-lg hover:bg-pink-600 transition-transform hover:scale-105">
             Edit Profile
           </button>
           <button 

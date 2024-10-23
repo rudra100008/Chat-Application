@@ -59,7 +59,10 @@ export default function Home() {
   
 
   useEffect(() => {
-     getUserDetails();
+    const token =getToken();
+    if(token){
+      getUserDetails();
+    }
   }, []);
 
   return (

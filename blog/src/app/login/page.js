@@ -8,6 +8,7 @@ import { useRouter } from "next/navigation";
 
 export default function Login() {
     const router = useRouter();
+    const [sessionMessage,setSessionMessage]=useState('')
     const [user, setUser] = useState({
         username: "",
         password: ""
@@ -16,7 +17,7 @@ export default function Login() {
     const newUser = (e) => {
         setUser({ ...user, [e.target.name]: e.target.value });
     };
-
+   
     const postFromServer = () => {
         axios.post(`${base_url}/login`, user)
             .then((response) => {
@@ -53,12 +54,17 @@ export default function Login() {
     };
 
     useEffect(() => {
-        const getMessage = localStorage.getItem("message");
-        if (getMessage === "true") {
-            toast.success("Session");
-            localStorage.removeItem("message");
+        const message = localStorage.getItem('message')
+        if (message) {
+           setSessionMessage(message); 
+            localStorage.removeItem('message');  // Clear the message
         }
     }, []);
+    useEffect(()=>{
+        if(sessionMessage){
+            toast.info(sessionMessage);
+        }
+    },[sessionMessage])
 
     return (
         <div className="min-h-screen items-center flex justify-center bg-gradient-to-r from-blue-300 to-purple-400">
