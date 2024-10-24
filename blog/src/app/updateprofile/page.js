@@ -19,7 +19,6 @@ export default function UpdateProfile() {
     const [user, setUser] = useState({
         username: "",
         email: "",
-        password :"",
         phoneNumber: "",
         description: "",
         image : null
@@ -27,7 +26,6 @@ export default function UpdateProfile() {
     const [validationError, setValidationError] = useState({
         username: "",
         email: "",
-        password :"",
         phoneNumber: "",
         description: "",
         image:""
@@ -37,7 +35,6 @@ export default function UpdateProfile() {
         formData.append("user", new Blob([JSON.stringify({
             username : user.username,
             email:user.email,
-            password :user.password,
             phoneNumber: user.phoneNumber,
             description: user.description
         })],{type : "application/json"}))
@@ -48,7 +45,7 @@ export default function UpdateProfile() {
             }
         }).then((response) => {
             console.log(response.data);
-            setUser({ username: "", email: "", password:"", phoneNumber: "", description: "" })
+            setUser({ username: "", email: "", phoneNumber: "", description: "" })
             toast.success("Profile Updated")
             setValidationError({})
         })
@@ -56,7 +53,11 @@ export default function UpdateProfile() {
                 console.log(error.response.data)
                 if (error.response.status === 400) {
                     const { message } = error.response.data;
-                    setValidationError(message);
+                    if (typeof message === 'object') {
+                        setValidationError(message);
+                    } else {
+                        toast.error(message);
+                    }
                 } else {
                     toast.error("Unexcepted error occured")
                 }
@@ -113,20 +114,6 @@ export default function UpdateProfile() {
                     </FormGroup>
 
                     <FormGroup>
-                        <Label htmlFor="password">Password:</Label>
-                        <Input
-                            type="password"
-                            id="password"
-                            name="password"
-                            value={user.password}
-                            onChange={(e) => setUser({ ...user, password: e.target.value })}
-                            invalid={!!validationError.password}
-                            placeholder="Enter password"
-                        />
-                        <p className="text-red-500">{validationError.password}</p>
-                    </FormGroup>
-
-                    <FormGroup>
                         <Label htmlFor="phoneNumber">Phone Number:</Label>
                         <Input
                             type="text"
@@ -169,7 +156,7 @@ export default function UpdateProfile() {
 
                     <FormGroup>
                         <button type="Submit" className="bg-blue-400 p-2 text-white font-semibold rounded-xl shadow-lg transition-transform hover:bg-blue-500 hover:scale-110">
-                            Signup
+                            Update
                         </button>
                     </FormGroup>
 

@@ -4,8 +4,10 @@ import { Fragment, useState } from "react";
 import { Form, FormGroup, Input, Label } from "reactstrap";
 import base_url from "../api/base_url";
 import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 export default function AddPost() {
+    const router =useRouter()
     const [postData, setPostData] = useState({
         postTitle: "",
         content: "",
@@ -38,18 +40,19 @@ export default function AddPost() {
         const formData = new FormData();
         formData.append("postDTO", new Blob([JSON.stringify({
             postTitle: postData.postTitle,
-            content: postData.content,
+            content: postData.content
         })], { type: "application/json" }));
         formData.append("image", postData.image); 
+        formData.append("userId", userId); // Add userId
+        formData.append("categoryId", postData.categoryId); 
         
-        axios.post(`${base_url}/posts?userId=${userId}&categoryId=${postData.categoryId}`, formData, {
+        axios.post(`${base_url}/posts`, formData, {
             headers: {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "multipart/form-data"
             }
         })
         .then((response) => {
-            toast.success("Post created successfully!");
             console.log(response.data)
             setPostData({
                 postTitle: "",
@@ -63,6 +66,8 @@ export default function AddPost() {
                 image:"",
                 categoryId:""
             })
+            toast.success("Post created successfully!");
+            
         })
         .catch((error) => {
             console.error(error.response.data);
@@ -84,10 +89,14 @@ export default function AddPost() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        if (!postData.categoryId) {
+            setValidationError({ ...validationError, categoryId: "Please select a category" });
+            return;  
+        }
         postDataToServer();
     };
     const handleCancel=()=>{
-        window.location.href="/home"
+        router.back()
     }
 
     return (
@@ -146,14 +155,17 @@ export default function AddPost() {
                             name="categoryId"
                             value={postData.categoryId}
                             onChange={handleChange}
+                            invalid={validationError.categoryId}
                             required
                             
                         >
-                            <option  value="" disabled>Choose a category</option>
+                            <option value="" disabled>Choose a category</option>
                             <option value="1">Music</option>
                             <option value="2">Movie</option>
                             <option value="3">Food</option>
+                            <option value="4">Others</option>
                         </Input>
+                        <p className="text-red-300  text-sm ">{validationError.categoryId}</p>
                     </FormGroup>
                     <FormGroup className="mt-3 flex flex-row justify-between">
                         <button

@@ -5,14 +5,17 @@ import { toast, ToastContainer } from "react-toastify";
 import { Form, FormGroup, Input, Label } from "reactstrap";
 import base_url from "../api/base_url";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function Signup() {
+    const router = useRouter();
     const [user, setUser] = useState({
         username: "",
         email: "",
         password: "",
         phoneNumber: "",
-        description: ""
+        description: "",
+        image: null
     });
 
     const [validationError, setValidationError] = useState({
@@ -20,18 +23,32 @@ export default function Signup() {
         email: "",
         password: "",
         phoneNumber: "",
-        description: ""
+        description: "",
+        image: ""
     });
 
+
+    const handleFileChange = (e) => {
+        setUser({ ...user, image: e.target.files[0] })
+    }
     const postUserToServer = () => {
-        axios.post(`${base_url}/register`, user).then(
+        const formData = new FormData();
+        formData.append("user",new Blob( [JSON.stringify({
+            username: user.username,
+            email: user.email,
+            password: user.password,
+            phoneNumber: user.phoneNumber,
+            description: user.description,
+        })],{type :"application/json"}))
+        formData.append("image",user.image)
+        axios.post(`${base_url}/register`, formData).then(
             (response) => {
                 console.log(response.data);
                 setUser({ username: "", email: "", password: "", phoneNumber: "", description: "" });
                 toast.success(response.data.message);
                 setValidationError({});
                 setTimeout(() => {
-                    window.location.href = "/";
+                   router.push("/")
                 }, 1000);
             }).catch((error) => {
                 console.log(error.response.data);
@@ -126,6 +143,19 @@ export default function Signup() {
                             placeholder="Enter 10-digit phone number"
                         />
                         <p className="text-red-500">{validationError.phoneNumber}</p>
+                    </FormGroup>
+
+                    <FormGroup>
+                        <Label htmlFor="image">Image</Label>
+                        <Input
+                            type="file"
+                            name="image"
+                            id="image"
+                            invalid={validationError.image}
+                            onChange={handleFileChange}
+
+                        />
+                        <p className="text-red-300  text-sm ">{validationError.image}</p>
                     </FormGroup>
 
                     <FormGroup>
