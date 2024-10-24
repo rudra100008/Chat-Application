@@ -73,31 +73,35 @@ public class PostController {
         }
 
         String imageName = null;
-        try {
-            // Validate file size and type
-            if (imageFile.isEmpty()) {
-                response.put("status", "BAD_REQUEST(400)");
-                response.put("message", "Image file is required");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        if(imageFile != null && imageFile.isEmpty()) {
+            try {
+                // Validate file size and type
+                if (imageFile.isEmpty()) {
+                    response.put("status", "BAD_REQUEST(400)");
+                    response.put("message", "Image file is required");
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+                }
+                if (imageFile.getSize() > 10 * 1024 * 1024) { // 10MB in bytes
+                    response.put("status", "BAD_REQUEST(400)");
+                    response.put("message", "Image file size exceeds the maximum limit of 10MB");
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+                }
+                imageName = this.fileService.uploadFile(path, imageFile);
+            } catch (IOException e) {
+                e.printStackTrace();  // Log the exception
+                response.put("status", "INTERNAL_SERVER_ERROR(500)");
+                response.put("message", "Image upload failed: " + e.getMessage());
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            } catch (Exception e) {
+                e.printStackTrace();  // Log unexpected exceptions
+                response.put("status", "INTERNAL_SERVER_ERROR(500)");
+                response.put("message", "An unexpected error occurred: " + e.getMessage());
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
             }
-            if (imageFile.getSize() > 10 * 1024 * 1024) { // 10MB in bytes
-                response.put("status", "BAD_REQUEST(400)");
-                response.put("message", "Image file size exceeds the maximum limit of 10MB");
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-            }
-            imageName = this.fileService.uploadFile(path, imageFile);
-        } catch (IOException e) {
-            e.printStackTrace();  // Log the exception
-            response.put("status", "INTERNAL_SERVER_ERROR(500)");
-            response.put("message", "Image upload failed: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        } catch (Exception e) {
-            e.printStackTrace();  // Log unexpected exceptions
-            response.put("status", "INTERNAL_SERVER_ERROR(500)");
-            response.put("message", "An unexpected error occurred: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
         }
-
+        if(imageFile ==null){
+            imageName = "";
+        }
         postDTO.setImage(imageName);
         // Create the post
         PostDTO savedPost = this.postService.createPost(postDTO, userId, categoryId);

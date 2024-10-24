@@ -30,6 +30,5 @@ public class PostDTO {
     // @PastOrPresent(message = "Post date must be in the past or present")
     private Date postDate;
     private int userId;
-
     private int categoryId;
 }

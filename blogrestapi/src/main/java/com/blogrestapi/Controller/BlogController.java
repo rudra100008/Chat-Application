@@ -10,14 +10,24 @@ import java.util.List;
 import java.util.Map;
 
 
+import com.blogrestapi.Dao.UserDao;
+import com.blogrestapi.Entity.User;
+import com.blogrestapi.Exception.ResourceNotFoundException;
+import com.blogrestapi.Security.UserDetailService;
 import com.blogrestapi.ServiceImpl.FileServiceImpl;
+import com.blogrestapi.ValidationGroup.UpdateUserGroup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import com.blogrestapi.DTO.UserDTO;
 import com.blogrestapi.Service.UserService;
@@ -34,7 +44,8 @@ public class BlogController {
     private FileServiceImpl fileService;
     @Value("${project.users.image}")
     private String imagePath;
-
+    @Autowired
+    private UserDao userDao;
     // this handler get all the user data from the database
     @GetMapping("/users")
     public ResponseEntity<List<UserDTO>> getAllUser() {
@@ -116,12 +127,26 @@ public class BlogController {
     }
 
     @PutMapping("/users/{id}")
-    public ResponseEntity<?> putUserById(@PathVariable("id") int id,@Valid @RequestPart("user") UserDTO user,
+    public ResponseEntity<?> putUserById(@PathVariable("id") int id,@Validated(UpdateUserGroup.class) @RequestPart("user") UserDTO user,
                                          BindingResult result,
                                          @RequestPart(value="image",required = false) MultipartFile imageFile) {
 
 
         Map<String,Object> response=new HashMap<>();
+        Authentication authentication= SecurityContextHolder.getContext().getAuthentication();
+        String currentUser= null;
+        if(authentication != null && authentication.getPrincipal() instanceof UserDetails){
+            UserDetails userDetails =(UserDetails) authentication.getPrincipal();
+            currentUser =userDetails.getUsername();
+        }
+        User getCurrentUserDetails = this.userDao.findByUsername(currentUser).orElseThrow(
+                ()-> new ResourceNotFoundException("User not found")
+        );
+        if(getCurrentUserDetails == null || getCurrentUserDetails.getId() != id){
+            response.put("status", "FORBIDDEN(403)");
+            response.put("message", "You are not authorized to update this user.");
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
+        }
         if (result.hasErrors()) {
             Map<String,Object> fieldError=new HashMap<>();
             result.getFieldErrors().forEach(err->fieldError.put(err.getField(), err.getDefaultMessage()));
