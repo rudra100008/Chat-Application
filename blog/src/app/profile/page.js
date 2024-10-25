@@ -6,7 +6,8 @@ import base_url from "../api/base_url";
 import { toast } from "react-toastify";
 import UserPost from "../components/UserPost";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft, faArrowRightFromBracket } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faArrowRightFromBracket, faClose } from "@fortawesome/free-solid-svg-icons";
+import UpdateProfile from "../updateprofile/page";
 
 
 const getUserId = () => {
@@ -21,6 +22,7 @@ const Profile = () => {
   const router = useRouter();
   const [imageUrl, setImageUrl] = useState("");
   const [active ,setActive]=useState("posts");
+  const [showModel,setShowModel] =useState(false);
   const [userDetails, setUserDetails] = useState({
     id: null,
     username: "",
@@ -180,7 +182,7 @@ const Profile = () => {
         </div>
         <div className="mt-6">
           <button 
-          onClick={handleProfileEdit}
+          onClick={()=> setShowModel(true)}
           className="bg-cyan-300 text-white font-semibold px-4 py-2 rounded-lg shadow-lg hover:bg-pink-600 transition-transform hover:scale-105">
             Edit Profile
           </button>
@@ -192,6 +194,13 @@ const Profile = () => {
         </div>
       </div>
       
+      {
+        showModel && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+              <UpdateProfile model={()=>setShowModel(false)} />
+          </div>
+        )
+      }
       <div className="bg-gray-300 max-w-4xl w-full mx-auto mt-3 p-3 flex justify-center items-center space-x-3 rounded-lg">
         <p href="/userPost" className={`${active === "posts" ? "underline decoration-blue-500  text-blue-500 underline-offset-4 decoration-2" :"hover:underline decoration-gray-400 text-gray-500 underline-offset-4 decoration-2"}
           text-lg font-semibold cursor-pointer`}
