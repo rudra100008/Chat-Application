@@ -2,8 +2,15 @@ package com.blogrestapi.ServiceImpl;
 
 import java.util.List;
 
+
+import com.blogrestapi.DTO.PageResponse;
+import com.blogrestapi.DTO.PostDTO;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.blogrestapi.DTO.CommentDTO;
@@ -73,6 +80,36 @@ public class CommentServiceImpl implements CommentService {
             throw new ResourceNotFoundException("Comment not found with id: "+commentId);
         }
         this.commentDao.deleteById(commentId);
+    }
+
+    @Override
+    public PageResponse<CommentDTO> getCommentByPostId(int postId,int pageNumber, int pageSize,String sortBy,String sortDir ) {
+        Post getPost =this.postDao.findById(postId).orElseThrow(
+                ()-> new ResourceNotFoundException("Cannot find the post by id: "+postId)
+        );
+        Sort sort = sortDir.equalsIgnoreCase("ascending")
+                ? Sort.by(sortBy).ascending()
+                : Sort.by(sortBy).descending();
+        Pageable pageable= PageRequest.of(pageNumber,pageSize,sort);
+        Page<Comment> page =this.commentDao.findCommentByPost(getPost,pageable);
+        List<Comment> getComment =page.getContent();
+        List<CommentDTO> getCommentDTO = getComment.stream()
+                 .map(comment-> modelMapper.map(comment, CommentDTO.class)).toList();
+        long totalElement=page.getTotalElements();
+        int totalPage=page.getTotalPages();
+        boolean lastPage=page.isLast();
+        PageResponse<CommentDTO> pageResponse=new PageResponse<>(
+                "OK(200)",
+                getCommentDTO,
+                pageSize,
+                pageNumber,
+                totalPage,
+                totalElement,
+                lastPage
+        );
+        return pageResponse;
+
+
     }
 
     @Override

@@ -19,7 +19,7 @@ public interface PostService {
     PostDTO createPost(PostDTO postDTO,int userId,int categoryId);
     //delete the post
     void deletePostById(int id);
-    //patch the post(to update the only required filed(like postTitle or content or image etc))
+    //patch the post(to update the only required filled(like postTitle or content or image etc))
     PostDTO updatePostField(int id,PostDTO postDTO,int userId,int categoryId);
     //search post
     List<PostDTO> searchPost(String keyword);

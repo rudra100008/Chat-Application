@@ -16,6 +16,9 @@ public interface PostDao extends MongoRepository<Post,Integer> {
     List<Post> findPostByUser(User user);
     Page<Post> findPostByCategory(Category category,Pageable pageable);
     List<Post> findByPostTitleContainingIgnoreCase(String postTitle);
+
 //    @Aggregation(pipeline = {"${sample:{size:?0} }"})
 //    List<Post> findRandomPosts(int pageSize);
+
+
 }

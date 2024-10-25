@@ -155,18 +155,23 @@ public class BlogController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
         String image= null;
-        try{
-            image = this.fileService.uploadFile(imagePath,imageFile);
-        }catch (IOException e) {
-             // Log the exception
-            response.put("status", "INTERNAL_SERVER_ERROR(500)");
-            response.put("message", "Image upload failed: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        } catch (Exception e) {
-           // Log unexpected exceptions
-            response.put("status", "INTERNAL_SERVER_ERROR(500)");
-            response.put("message", "An unexpected error occurred: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        if(imageFile != null && imageFile.isEmpty()) {
+            try {
+                image = this.fileService.uploadFile(imagePath, imageFile);
+            } catch (IOException e) {
+                // Log the exception
+                response.put("status", "INTERNAL_SERVER_ERROR(500)");
+                response.put("message", "Image upload failed: " + e.getMessage());
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            } catch (Exception e) {
+                // Log unexpected exceptions
+                response.put("status", "INTERNAL_SERVER_ERROR(500)");
+                response.put("message", "An unexpected error occurred: " + e.getMessage());
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            }
+        }
+        if(imageFile ==  null){
+            image = "";
         }
         user.setImage(image);
         UserDTO updatedUser = this.userService.updateUserById(id, user);
