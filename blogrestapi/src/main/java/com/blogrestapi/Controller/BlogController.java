@@ -73,47 +73,6 @@ public class BlogController {
         UserDTO getUserById = this.userService.getUserById(id);
         return ResponseEntity.ok(getUserById);
     }
-
-    // this handler get the input from the user and post the data to database
-    @PostMapping("/users")
-    public ResponseEntity<?> postUser(@Valid @RequestPart("user") UserDTO user, BindingResult result
-    ,@RequestPart(value = "image",required = false) MultipartFile imageFile) {
-        Map<String, Object> response = new HashMap<>();
-        user.setEnable(true);
-        String rawPassword=user.getPassword();
-        if (rawPassword.length() <= 3 || rawPassword.length()>=16) {
-            result.rejectValue("password", "error.user","Password should be less than 3 and greater than 16");
-        }
-        if (result.hasErrors()) {
-            Map<String,Object> errorMessage=new HashMap<>();
-            result.getFieldErrors().forEach(error->{
-                errorMessage.put(error.getField(),error.getDefaultMessage());
-            });
-            response.put("status","BAD_REQUEST(400)");
-            response.put("message",errorMessage);
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-        }
-        String image= null;
-        try{
-            image = this.fileService.uploadFile(imagePath,imageFile);
-        }catch (IOException e) {
-             // Log the exception
-            response.put("status", "INTERNAL_SERVER_ERROR(500)");
-            response.put("message", "Image upload failed: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        } catch (Exception e) {
-             // Log unexpected exceptions
-            response.put("status", "INTERNAL_SERVER_ERROR(500)");
-            response.put("message", "An unexpected error occurred: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
-        }
-        user.setImage(image);
-        UserDTO saveUser = this.userService.createUser(user);
-        response.put("message", "User inserted successfully");
-        response.put("status", "CREATED(201)");
-        response.put("data", saveUser);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
-    }
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/users/{id}")
     public ResponseEntity<?> deleteUserById(@PathVariable("id") int id) {
@@ -155,7 +114,7 @@ public class BlogController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
         String image= null;
-        if(imageFile != null && imageFile.isEmpty()) {
+        if(imageFile != null && !imageFile.isEmpty()) {
             try {
                 image = this.fileService.uploadFile(imagePath, imageFile);
             } catch (IOException e) {
@@ -170,7 +129,7 @@ public class BlogController {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
             }
         }
-        if(imageFile ==  null){
+        if(imageFile ==  null && imageFile.isEmpty()){
             image = "";
         }
         user.setImage(image);

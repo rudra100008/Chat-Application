@@ -112,12 +112,13 @@ public class PostController {
 
 
     // handler for updating the post
-    @PutMapping("/posts/{id}")
+    @PutMapping("/posts/{id}/users/{userId}")
     public ResponseEntity<?> updatePost(@PathVariable("id") int id,
-            @Valid @RequestBody PostDTO postDTO,
+            @Valid  @RequestPart(value = "postDTO") PostDTO postDTO,
             BindingResult result,
-            @RequestParam("userId") int userId,
-            @RequestParam("categoryId") int categoryId) {
+            @PathVariable("userId") int userId,
+            @RequestParam("categoryId") int categoryId,
+            @RequestPart(value = "image",required = false) MultipartFile imageFile) {
         Map<String, Object> response = new HashMap<>();
         if (result.hasErrors()) {
             Map<String, Object> error = new HashMap<>();
@@ -126,6 +127,24 @@ public class PostController {
             response.put("message", error);
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
         }
+        String image = null;
+        if(imageFile != null && !imageFile.isEmpty()){
+            try {
+                image = this.fileService.uploadFile(path, imageFile);
+            } catch (IOException e) {
+                response.put("status", "INTERNAL_SERVER_ERROR(500)");
+                response.put("message", "Image upload failed: " + e.getMessage());
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            } catch (Exception e) {
+                response.put("status", "INTERNAL_SERVER_ERROR(500)");
+                response.put("message", "An unexpected error occurred: " + e.getMessage());
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+            }
+        }
+        if(imageFile ==  null && imageFile.isEmpty()){
+            image = "";
+        }
+        postDTO.setImage(image);
         PostDTO updatePost = this.postService.updatePostField(id, postDTO, userId, categoryId);
         return ResponseEntity.ok(updatePost);
     }

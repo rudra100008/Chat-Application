@@ -83,11 +83,11 @@ public class UserServiceImpl implements UserService {
             Role role=new Role(2,"ROLE_USER");
             user.setRole(role);
         }
-        if(userDTO.getImage()==null){
-            user.setImage("default.jpg");
-        }else{
-            user.setImage(userDTO.getImage());
-        }
+       if(userDTO.getImage() != null && !userDTO.getImage().isEmpty() ){
+           user.setImage(userDTO.getImage());
+       }else{
+          user.setImage(user.getImage());
+       }
         if(!userDTO.getEmail().isEmpty()){
             user.setEmail(userDTO.getEmail());
         }
