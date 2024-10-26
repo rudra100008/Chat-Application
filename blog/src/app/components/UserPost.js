@@ -22,6 +22,7 @@ export default function UserPost() {
         });
     };
     
+    
     const getUserPostFromServer = async () => {
         await axios
             .get(`${base_url}/posts/user/${getUserId()}`, {

@@ -6,8 +6,10 @@ import base_url from "../api/base_url";
 import axios from 'axios';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClose } from '@fortawesome/free-solid-svg-icons';
+import { useRouter } from 'next/navigation';
 
-export default function UpdateProfile({model}) {
+export default function UpdateProfile({ userDetails ,model}) {
+    const router = useRouter();
     const getToken = () => {
         return localStorage.getItem('token')
     }
@@ -99,8 +101,8 @@ export default function UpdateProfile({model}) {
                                 value={user.username}
                                 onChange={(e) => setUser({ ...user, username: e.target.value })}
                                 invalid={!!validationError.username}
-                                placeholder="Enter username"
-                                className="w-full border rounded-lg py-2 px-3 text-sm shadow focus:ring-2 focus:ring-blue-400"
+                                placeholder={userDetails.username}
+                                className="w-full border rounded-lg py-2 px-3 text-sm "
                             />
                             <p className="text-red-500 text-xs">{validationError.username}</p>
                         </FormGroup>
@@ -114,8 +116,8 @@ export default function UpdateProfile({model}) {
                                 value={user.email}
                                 onChange={(e) => setUser({ ...user, email: e.target.value })}
                                 invalid={!!validationError.email}
-                                placeholder="Enter email"
-                                className="w-full border rounded-lg py-2 px-3 text-sm shadow focus:ring-2 focus:ring-blue-400"
+                                placeholder={userDetails.email}
+                                className="w-full border rounded-lg py-2 px-3 text-sm "
                             />
                             <p className="text-red-500 text-xs">{validationError.email}</p>
                         </FormGroup>
@@ -129,8 +131,8 @@ export default function UpdateProfile({model}) {
                                 value={user.phoneNumber}
                                 onChange={(e) => setUser({ ...user, phoneNumber: e.target.value })}
                                 invalid={!!validationError.phoneNumber}
-                                placeholder="Enter 10-digit phone number"
-                                className="w-full border rounded-lg py-2 px-3 text-sm shadow focus:ring-2 focus:ring-blue-400"
+                                placeholder={userDetails.phoneNumber}
+                                className="w-full border rounded-lg py-2 px-3 text-sm "
                             />
                             <p className="text-red-500 text-xs">{validationError.phoneNumber}</p>
                         </FormGroup>
@@ -144,8 +146,8 @@ export default function UpdateProfile({model}) {
                                 value={user.description}
                                 onChange={(e) => setUser({ ...user, description: e.target.value })}
                                 invalid={!!validationError.description}
-                                placeholder="Tell us a little about yourself"
-                                className="w-full border rounded-lg py-2 px-3 text-sm shadow focus:ring-2 focus:ring-blue-400"
+                                placeholder={userDetails.description}
+                                className="w-full border rounded-lg py-2 px-3 text-sm "
                             />
                             <p className="text-red-500 text-xs">{validationError.description}</p>
                         </FormGroup>
@@ -171,6 +173,7 @@ export default function UpdateProfile({model}) {
                         <div className="text-center mt-6">
                             <button
                                 type="submit"
+                                onClick={()=> router.push("/")}
                                 className="bg-blue-500 text-white font-semibold px-6 py-2 rounded-lg shadow-md hover:bg-blue-600 transition ease-in-out duration-200"
                             >
                                 Update Profile

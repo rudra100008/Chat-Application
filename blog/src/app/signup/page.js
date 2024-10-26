@@ -1,6 +1,6 @@
 "use client";
 import axios from "axios";
-import { Fragment, useState } from "react";
+import { useState } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import { Form, FormGroup, Input, Label } from "reactstrap";
 import base_url from "../api/base_url";
@@ -33,14 +33,14 @@ export default function Signup() {
     }
     const postUserToServer = () => {
         const formData = new FormData();
-        formData.append("user",new Blob( [JSON.stringify({
+        formData.append("user", new Blob([JSON.stringify({
             username: user.username,
             email: user.email,
             password: user.password,
             phoneNumber: user.phoneNumber,
             description: user.description,
-        })],{type :"application/json"}))
-        formData.append("image",user.image)
+        })], { type: "application/json" }))
+        formData.append("image", user.image)
         axios.post(`${base_url}/register`, formData).then(
             (response) => {
                 console.log(response.data);
@@ -48,7 +48,7 @@ export default function Signup() {
                 toast.success(response.data.message);
                 setValidationError({});
                 setTimeout(() => {
-                   router.push("/")
+                    router.push("/")
                 }, 1000);
             }).catch((error) => {
                 console.log(error.response.data);
@@ -72,7 +72,7 @@ export default function Signup() {
     };
 
     return (
-        <div className="min-h-screen items-center flex justify-center bg-gradient-to-r from-blue-300 to-purple-400">
+        <div className="min-h-screen py-10 flex items-center  justify-center bg-gradient-to-r from-blue-300 to-purple-400">
             <ToastContainer
                 position="top-right"
                 autoClose={3000}
@@ -85,26 +85,29 @@ export default function Signup() {
                 pauseOnHover
                 theme="dark"
             />
-            <Fragment>
-                <Form noValidate onSubmit={handleForm} className="bg-white max-w-md w-full p-8 rounded-lg shadow-lg">
-                    <h3 className="text-center mb-4">Create your account</h3>
+            <div className="bg-white max-w-lg w-full  py-6 px-8 rounded-lg shadow-lg">
+                <Form noValidate onSubmit={handleForm} className=" space-y-4 ">
+                    <h3 className="text-center text-xl font-semibold mb-4">Create your account</h3>
 
                     <FormGroup>
-                        <Label htmlFor="username">Username:</Label>
-                        <Input
-                            type="text"
-                            id="username"
-                            name="username"
-                            value={user.username}
-                            onChange={(e) => setUser({ ...user, username: e.target.value })}
-                            invalid={!!validationError.username}
-                            placeholder="Enter username"
-                        />
-                        <p className="text-red-500">{validationError.username}</p>
+                        <Label htmlFor="username" className="block text-xs font-semibold text-gray-600">Username</Label>
+                        
+                            <Input
+                                type="text"
+                                id="username"
+                                name="username"
+                                value={user.username}
+                                onChange={(e) => setUser({ ...user, username: e.target.value })}
+                                invalid={!!validationError.username}
+                                placeholder="Enter username"
+                                className="w-full border rounded-lg py-2 px-3 text-sm" 
+                            />
+                        
+                        <p  className="text-red-500 text-sm mt-1">{validationError.username}</p>
                     </FormGroup>
 
                     <FormGroup>
-                        <Label htmlFor="email">Email:</Label>
+                        <Label htmlFor="email" className="block text-xs font-semibold text-gray-600">Email</Label>
                         <Input
                             type="email"
                             id="email"
@@ -113,12 +116,13 @@ export default function Signup() {
                             onChange={(e) => setUser({ ...user, email: e.target.value })}
                             invalid={!!validationError.email}
                             placeholder="Enter email"
+                            className="w-full  border rounded-lg py-2 px-3 text-sm "
                         />
-                        <p className="text-red-500">{validationError.email}</p>
+                        <p  className="text-red-500 text-sm mt-1">{validationError.email}</p>
                     </FormGroup>
 
                     <FormGroup>
-                        <Label htmlFor="password">Password:</Label>
+                        <Label htmlFor="password" className="block text-xs font-semibold text-gray-600">Password</Label>
                         <Input
                             type="password"
                             id="password"
@@ -127,12 +131,13 @@ export default function Signup() {
                             onChange={(e) => setUser({ ...user, password: e.target.value })}
                             invalid={!!validationError.password}
                             placeholder="Enter password"
+                            className="w-full  border rounded-lg py-2 px-3 text-sm"
                         />
-                        <p className="text-red-500">{validationError.password}</p>
+                        <p  className="text-red-500 text-sm mt-1">{validationError.password}</p>
                     </FormGroup>
 
                     <FormGroup>
-                        <Label htmlFor="phoneNumber">Phone Number:</Label>
+                        <Label htmlFor="phoneNumber" className="block text-xs font-semibold text-gray-600">Phone Number</Label>
                         <Input
                             type="text"
                             id="phoneNumber"
@@ -141,25 +146,31 @@ export default function Signup() {
                             onChange={(e) => setUser({ ...user, phoneNumber: e.target.value })}
                             invalid={!!validationError.phoneNumber}
                             placeholder="Enter 10-digit phone number"
+                            className="w-full  border rounded-lg py-2 px-3 text-sm "
                         />
-                        <p className="text-red-500">{validationError.phoneNumber}</p>
+                        <p  className="text-red-500 text-sm mt-1">{validationError.phoneNumber}</p>
                     </FormGroup>
 
                     <FormGroup>
-                        <Label htmlFor="image">Image</Label>
-                        <Input
-                            type="file"
-                            name="image"
-                            id="image"
-                            invalid={validationError.image}
-                            onChange={handleFileChange}
-
-                        />
-                        <p className="text-red-300  text-sm ">{validationError.image}</p>
+                        <Label htmlFor="image" className="block text-xs font-semibold text-gray-600">Image</Label>
+                        <div className="flex items-center space-x-4">
+                            {user.image &&
+                                <img src={URL.createObjectURL(user.image)} alt="" className="h-16 w-16 rounded-full border object-cover" />
+                            }
+                            <Input
+                                type="file"
+                                name="image"
+                                id="image"
+                                invalid={validationError.image}
+                                onChange={handleFileChange}
+                                className="py-2 px-3 w-full text-sm"
+                            />
+                        </div>
+                        <p  className="text-red-500 text-sm mt-1">{validationError.image}</p>
                     </FormGroup>
 
                     <FormGroup>
-                        <Label htmlFor="description">About Yourself:</Label>
+                        <Label htmlFor="description" className="block text-xs font-semibold text-gray-600">About Yourself</Label>
                         <Input
                             type="textarea"
                             id="description"
@@ -168,21 +179,22 @@ export default function Signup() {
                             onChange={(e) => setUser({ ...user, description: e.target.value })}
                             invalid={!!validationError.description}
                             placeholder="Tell us a little about yourself"
+                            className="w-full  border rounded-lg py-2 px-3 text-sm "
                         />
-                        <p className="text-red-500">{validationError.description}</p>
+                        <p  className="text-red-500 text-sm mt-1">{validationError.description}</p>
                     </FormGroup>
 
                     <FormGroup>
-                        <button type="Submit" className="bg-blue-400 p-2 text-white font-semibold rounded-xl shadow-lg transition-transform hover:bg-blue-500 hover:scale-110">
+                        <button type="Submit" className="bg-blue-500 px-6 py-2 text-white font-semibold rounded-xl shadow-md transition-transform hover:bg-blue-700 hover:scale-110">
                             Signup
                         </button>
                     </FormGroup>
-
-                    <p className="mt-4 font-semibold text-sm text-center">
+                    <p className="mt-2 font-semibold text-sm text-center">
                         <Link className="no-underline text-blue-500 hover:text-blue-300 hover:underline" href="/">Already have an account?</Link>
                     </p>
+                   
                 </Form>
-            </Fragment>
+            </div>
         </div>
     );
 }

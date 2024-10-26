@@ -122,9 +122,7 @@ const Profile = () => {
   const handleAddPost=()=>{
    router.push("/addPost")
   }
-  const handleProfileEdit=()=>{
-   router.push("/updateprofile")
-  }
+ 
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -197,7 +195,7 @@ const Profile = () => {
       {
         showModel && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-              <UpdateProfile model={()=>setShowModel(false)} />
+              <UpdateProfile userDetails={userDetails} model={()=>setShowModel(false)} />
           </div>
         )
       }
