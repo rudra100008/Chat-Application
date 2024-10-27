@@ -97,6 +97,12 @@ public class UserServiceImpl implements UserService {
         if(userDTO.getPassword() != null && !userDTO.getPassword().isEmpty()) {
             user.setPassword(encoder.encode(userDTO.getPassword()));
         }
+        if(!userDTO.getPhoneNumber().isEmpty()){
+            user.setPhoneNumber(userDTO.getPhoneNumber());
+        }
+        if(!userDTO.getDescription().isEmpty()){
+            user.setDescription(userDTO.getDescription());
+        }
        user.setEnable(true);
       User updateduser= this.userDao.save(user);
       return modelMapper.map(updateduser, UserDTO.class);

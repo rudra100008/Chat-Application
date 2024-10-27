@@ -2,6 +2,8 @@ package com.blogrestapi.ServiceImpl;
 
 import java.util.Date;
 import java.util.List;
+
+import com.blogrestapi.Config.AppConstant;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -39,7 +41,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public PageResponse<PostDTO> getAllPost(int pageNumber,int pageSize,String sortBy,String sortDir) {
 
-        Sort sort=sortDir.equalsIgnoreCase("ascending")
+        Sort sort=sortDir.equalsIgnoreCase(AppConstant.SORT_DIR)
                 ?Sort.by(sortBy).ascending()
                 :Sort.by(sortBy).descending();
         Pageable pageable=PageRequest.of(pageNumber, pageSize,sort);
@@ -138,7 +140,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PageResponse<PostDTO> getPostByUserId(int userId,int pageNumber,int pageSize,String sortBy,String sortDir) {
-        Sort sort=sortDir.equalsIgnoreCase("ascending")
+        Sort sort=sortDir.equalsIgnoreCase(AppConstant.SORT_DIR)
         ?Sort.by(sortBy).ascending():Sort.by(sortBy).descending();
         User user =this.userDao.findById(userId)
         .orElseThrow(()->new ResourceNotFoundException("User not found by this id: "+userId));
@@ -164,7 +166,7 @@ public class PostServiceImpl implements PostService {
 
     @Override
     public PageResponse<PostDTO> getPostByCategoryId(int categoryId,int pageNumber,int pageSize,String sortBy,String sortDir) {
-        Sort sort=sortDir.equalsIgnoreCase("ascending")
+        Sort sort=sortDir.equalsIgnoreCase(AppConstant.SORT_DIR)
         ?Sort.by(sortBy).ascending():Sort.by(sortBy).descending();
         //to get the category with provide categoryID
         Category category=this.categoryDao.findById(categoryId)

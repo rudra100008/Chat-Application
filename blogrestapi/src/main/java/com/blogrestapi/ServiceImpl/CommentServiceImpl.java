@@ -3,6 +3,7 @@ package com.blogrestapi.ServiceImpl;
 import java.util.List;
 
 
+import com.blogrestapi.Config.AppConstant;
 import com.blogrestapi.DTO.PageResponse;
 import com.blogrestapi.DTO.PostDTO;
 import org.modelmapper.ModelMapper;
@@ -87,7 +88,7 @@ public class CommentServiceImpl implements CommentService {
         Post getPost =this.postDao.findById(postId).orElseThrow(
                 ()-> new ResourceNotFoundException("Cannot find the post by id: "+postId)
         );
-        Sort sort = sortDir.equalsIgnoreCase("ascending")
+        Sort sort = sortDir.equalsIgnoreCase(AppConstant.SORT_DIR)
                 ? Sort.by(sortBy).ascending()
                 : Sort.by(sortBy).descending();
         Pageable pageable= PageRequest.of(pageNumber,pageSize,sort);

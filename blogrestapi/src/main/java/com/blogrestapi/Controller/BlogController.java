@@ -129,7 +129,7 @@ public class BlogController {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
             }
         }
-        if(imageFile ==  null && imageFile.isEmpty()){
+        if(imageFile ==  null || imageFile.isEmpty()){
             image = "";
         }
         user.setImage(image);

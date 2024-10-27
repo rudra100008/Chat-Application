@@ -73,7 +73,7 @@ public class PostController {
         }
 
         String imageName = null;
-        if(imageFile != null && imageFile.isEmpty()) {
+        if(imageFile != null && !imageFile.isEmpty()) {
             try {
                 // Validate file size and type
                 if (imageFile.isEmpty()) {
@@ -99,7 +99,7 @@ public class PostController {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
             }
         }
-        if(imageFile ==null){
+        if(imageFile == null){
             imageName = "";
         }
         postDTO.setImage(imageName);
@@ -141,7 +141,7 @@ public class PostController {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
             }
         }
-        if(imageFile ==  null && imageFile.isEmpty()){
+        if(imageFile ==  null || imageFile.isEmpty()){
             image = "";
         }
         postDTO.setImage(image);
@@ -160,7 +160,7 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(response);
     }
     // get post of a particular user by using id
-    @GetMapping("posts/user/{userId}")
+    @GetMapping("/posts/user/{userId}")
     public ResponseEntity<?> getPostByUser(@PathVariable("userId") int userId,
             @RequestParam(value = "pageNumber", required = false, defaultValue = AppConstant.PAGE_NUMBER) int pageNumber,
             @RequestParam(value = "pageSize", required = false, defaultValue = AppConstant.PAGE_SIZE) int pageSize,
@@ -172,7 +172,7 @@ public class PostController {
     }
 
     // get posts of in a particular category
-    @GetMapping("posts/category/{categoryId}")
+    @GetMapping("/posts/category/{categoryId}")
     public ResponseEntity<?> getPostByCategory(@PathVariable("categoryId") int categoryId,
             @RequestParam(value = "pageNumber", required = false, defaultValue = AppConstant.PAGE_NUMBER) int pageNumber,
             @RequestParam(value = "pageSize", required = false, defaultValue = AppConstant.PAGE_SIZE) int pageSize,
