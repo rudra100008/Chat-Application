@@ -96,13 +96,13 @@ export default function AddPost() {
     };
 
     return (
-        <div className="flex justify-center items-center bg-gray-50 min-h-screen p-5">
+        <div className="flex justify-center items-center bg-gray-50 min-h-screen ">
             <Fragment>
-                <Form noValidate onSubmit={handleSubmit} className="max-w-2xl p-8 w-full rounded-lg shadow-lg bg-white border border-gray-200 mt-5">
+                <Form noValidate onSubmit={handleSubmit} className="max-w-xl px-8 py-3 w-full rounded-lg shadow-lg bg-white border border-gray-200 mt-5">
                     <h1 className="text-center mb-4 text-3xl font-semibold text-gray-700">Share Your Thoughts</h1>
 
                     <FormGroup>
-                        <Label htmlFor="postTitle" className="text-lg text-gray-600 font-medium">Title</Label>
+                        <Label htmlFor="postTitle" className="text-base text-gray-600 font-medium">Title</Label>
                         <Input
                             type="text"
                             name="postTitle"
@@ -112,13 +112,13 @@ export default function AddPost() {
                             placeholder="Enter your post title"
                             invalid={validationError.postTitle}
                             required
-                            className="border-gray-300 rounded-lg p-2 mt-1"
+                            className=" rounded-lg  "
                         />
                         <p className="text-red-500 text-sm mt-1">{validationError.postTitle}</p>
                     </FormGroup>
 
                     <FormGroup className="mt-4">
-                        <Label htmlFor="content" className="text-lg text-gray-600 font-medium">Content</Label>
+                        <Label htmlFor="content" className="text-base text-gray-600 font-medium">Content</Label>
                         <Input
                             type="textarea"
                             name="content"
@@ -126,7 +126,7 @@ export default function AddPost() {
                             value={postData.content}
                             onChange={handleChange}
                             placeholder="Write your content here"
-                            className="h-40 border-gray-300 rounded-lg p-2 mt-1"
+                            className="h-32  rounded-lg "
                             required
                             invalid={validationError.content}
                         />
@@ -134,7 +134,7 @@ export default function AddPost() {
                     </FormGroup>
 
                     <FormGroup className="mt-4">
-                        <Label htmlFor="image" className="text-lg text-gray-600 font-medium">Image</Label>
+                        <Label htmlFor="image" className="text-base text-gray-600 font-medium">Image</Label>
                         <div className="flex items-center justify-center space-x-4">
                             {postData.image && (
                                 <img src={URL.createObjectURL(postData.image)} alt="" className="w-16 h-16 rounded-full border object-cover" />
@@ -145,14 +145,14 @@ export default function AddPost() {
                                 id="image"
                                 invalid={validationError.image}
                                 onChange={handleFileChange}
-                                className="border-gray-300 rounded-lg mt-1"
+                                className=" rounded-lg "
                             />
                         </div>
                         <p className="text-red-500 text-sm mt-1">{validationError.image}</p>
                     </FormGroup>
 
                     <FormGroup className="mt-4">
-                        <Label htmlFor="category" className="text-lg text-gray-600 font-medium">Category</Label>
+                        <Label htmlFor="category" className="text-base text-gray-600 font-medium">Category</Label>
                         <Input
                             type="select"
                             id="category"
@@ -161,7 +161,7 @@ export default function AddPost() {
                             onChange={handleChange}
                             invalid={validationError.categoryId}
                             required
-                            className="border-gray-300 rounded-lg p-2 mt-1"
+                            className=" rounded-lg"
                         >
                             <option value="" disabled>Choose a category</option>
                             <option value="1">Music</option>
@@ -175,6 +175,7 @@ export default function AddPost() {
                     <FormGroup className="mt-6 flex justify-between">
                         <button
                             type="submit"
+                            onClick={()=>router.push("/home")}
                             className="bg-blue-500 text-white px-5 py-2 font-semibold rounded-lg shadow-md hover:bg-blue-600 transition-transform transform hover:scale-105"
                         >
                             Post

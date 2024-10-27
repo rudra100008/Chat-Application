@@ -48,7 +48,7 @@ export default function UserPost() {
                 console.log(error || "Something went wrong");
             });
     };
-
+   
     function debounce(func, delay) {
         let timeout;
         return function (...args) {

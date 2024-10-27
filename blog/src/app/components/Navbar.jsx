@@ -123,21 +123,23 @@ const Navbar = ({ user }) => {
               </div>
             )}
           </div>
-          <h1 className="text-xl font-bold text-white">
-            <Link href="/home">BlogApp</Link>
+          <h1 className="text-xl font-bold text-white ">
+            <Link href="/home" className='no-underline text-xl font-bold text-white '>
+              BlogApp
+            </Link>
           </h1>
         </div>
 
         {/* Desktop Menu */}
-        <div className="hidden md:flex items-center space-x-9">
+        <div className="hidden md:flex  items-center justify center  space-x-9">
           <Link href="/home" className="hover:text-white no-underline">
             <p className={`${pathname === "/home" ? "text-amber-300" : "text-gray-400"}`}>
-              <FontAwesomeIcon icon={faHome} className="w-7 h-7" />
+              <FontAwesomeIcon icon={faHome} className="w-5 h-5" /> <span className='ml-2'>Home</span>
             </p>
           </Link>
           <Link href="/about" className="no-underline hover:text-white">
             <p className={`${pathname === "/about" ? "text-amber-300" : "text-gray-400"}`}>
-              <FontAwesomeIcon icon={faInfoCircle} className="w-7 h-7" />
+              <FontAwesomeIcon icon={faInfoCircle} className="w-5 h-5" /> <span className="ml-2">About</span>
             </p>
           </Link>
           {loggedIn ? (
@@ -149,12 +151,15 @@ const Navbar = ({ user }) => {
               <FontAwesomeIcon icon={faSignInAlt} />
             </Link>
           )}
-          <Link href="/profile" className="text-gray-400 hover:text-gray-300 no-underline flex items-center space-x-2">
+          <Link href="/profile" className="font-medium flex no-underline items-center space-x-2 ">
             <div className="w-8 h-8 rounded-full overflow-hidden shadow-lg">
               <img src={imageUrl} alt={user.username} className="w-full h-full object-cover" />
             </div>
-            <span className="text-white">@{user.username.toUpperCase()}</span>
+            <span className="text-gray-200 font-medium hover:text-blue-400  hover:underline hover:underline-offset-2">
+              @{user.username.toUpperCase()}
+            </span>
           </Link>
+
         </div>
       </div>
     </nav>

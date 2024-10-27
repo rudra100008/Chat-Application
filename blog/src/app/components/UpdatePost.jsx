@@ -10,10 +10,10 @@ import { toast, ToastContainer } from "react-toastify";
 const UpdatePost = ({ post, model }) => {
     const router = useRouter();
     const [postData, setPostData] = useState({
-        postTitle: "",
-        content: "",
+        postTitle: post.postTitle,
+        content: post.content,
         image: null,
-        categoryId: "",
+        categoryId: post.categoryId,
     });
     const [validationError, setValidationError] = useState({
         postTitle: "",
@@ -58,7 +58,8 @@ const UpdatePost = ({ post, model }) => {
                 image: "",
                 categoryId: ""
             })
-            toast.success("Post created successfully!");
+            toast.success("Post updated successfully!");
+            
         }) .catch((error) => {
             console.error(error.response.data);
             if (error.response.status === 400) {
@@ -139,11 +140,11 @@ const UpdatePost = ({ post, model }) => {
                             <Label htmlFor="image" className="text-md text-gray-600 font-medium">Image</Label>
                             <div className="flex items-center space-x-3">
                                 {postData.image && (
-                                    <img
-                                        src={URL.createObjectURL(postData.image)}
-                                        alt="Post preview"
-                                        className="h-12 w-12 rounded-full border object-cover"
-                                    />
+                                     <img
+                                     src={URL.createObjectURL(postData.image)}
+                                     alt="Post preview"
+                                     className="h-12 w-12 rounded-full border object-cover"/>
+                                   
                                 )}
                                 <Input
                                     type="file"

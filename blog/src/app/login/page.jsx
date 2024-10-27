@@ -28,12 +28,10 @@ export default function Login() {
                     localStorage.setItem("token", token);
                     localStorage.setItem("userId", userId);
                     toast.success("Login Successful");
-                    setTimeout(() => {
-                        router.push("/home");
-                    }, 500);
                 } else {
                     console.error("No data received from server");
                 }
+                router.push("/home")
             })
             .catch((err) => {
                 console.log(err.response?.data);

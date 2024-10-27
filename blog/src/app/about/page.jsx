@@ -45,18 +45,12 @@ export default function About(){
   
     useEffect(() => {
       const token = localStorage.getItem('token');
-      const isTokenExpired =localStorage.getItem('isTokenExpired')
       if (!token) {
         router.push("/");
       } else {
         getUserDetails(); // Fetch user details if token is present
       }
-      if(isTokenExpired === "true"){
-        router.push("/")
-        localStorage.removeItem("isTokenExpired")
-      }else{
-        router.push("/about")
-      }
+      
     }, [router]);
     return(
         <div>
