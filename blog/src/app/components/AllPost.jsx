@@ -2,8 +2,9 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import base_url from "../api/base_url";
-import Post from "./Post"; 
+import Post from "./Post";
 import { useRouter } from "next/navigation";
+import { Form, FormGroup, Input, Label } from "reactstrap";
 
 const getToken = () => {
     return localStorage.getItem("token");
@@ -12,15 +13,16 @@ const getToken = () => {
 const AllPost = () => {
     const router = useRouter();
     const [posts, setPosts] = useState([]);
+    const [categoryId, setCategoryId] = useState(0);
     const [pageNumber, setPageNumber] = useState(0);
     const [loading, setLoading] = useState(false);
-    const [hasMorePosts, setHasMorePosts] = useState(true); 
+    const [hasMorePosts, setHasMorePosts] = useState(true);
     const [sortBy, setSortBy] = useState('postDate');
     const [sortDir, setSortDir] = useState('ascending');
-    
+
     const fetchPosts = async () => {
-        if (loading || !hasMorePosts) return; 
-        setLoading(true); 
+        if (loading || !hasMorePosts) return;
+        setLoading(true);
         try {
             const token = getToken();
             const response = await axios.get(`${base_url}/posts`, {
@@ -38,8 +40,8 @@ const AllPost = () => {
             const { data, totalPage, pageNumber: currentPage } = response.data;
             setPosts((prevPosts) => {
                 const existingPostIds = new Set(prevPosts.map((post) => post.postId));
-                const newPosts = data.filter((post) => !existingPostIds.has(post.postId)); 
-                return [...prevPosts, ...newPosts]; 
+                const newPosts = data.filter((post) => !existingPostIds.has(post.postId));
+                return [...prevPosts, ...newPosts];
             });
 
             if (data.length === 0 || currentPage >= totalPage - 1) {
@@ -51,13 +53,50 @@ const AllPost = () => {
                 localStorage.setItem("message", "Session expired. Please log in again.");
                 setTimeout(() => {
                     router.push("/"); // Redirect to login page
-                }, 1000); 
+                }, 1000);
             }
         } finally {
-            setLoading(false); 
+            setLoading(false);
         }
     };
 
+    // const handleCategoryPost = (e) => {
+    //     e.preventDefault();
+    //     setPageNumber(0);
+    //     setPosts([]);
+    //    fetchPostsByCategory();
+    // }
+
+    const fetchPostsByCategory=async()=>{
+        console.log("CateoryId "+categoryId)
+        // if (categoryId === 0) {
+        //     fetchPosts(); 
+        //     console.log("return")
+        //     return;
+        // }
+        try {
+            const token = getToken();
+            const response = await axios.get(`${base_url}/posts/category/${categoryId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                params: { pageNumber, pageSize: 3 },
+            });
+            console.log(response.data)
+            const { data } = response.data;
+            setPosts((prevPost) => {
+                const existingIds = new Set(prevPost.map((post) => post.postId));
+                const newPosts = data.filter((post) => !existingIds.has(post.postId));
+                return [...prevPost, ...newPosts];
+            });
+            
+            if (data.length === 0) {
+                setHasMorePosts(false);
+            }
+        } catch (error) {
+            console.error("Error fetching category posts:", error.response);
+        }
+    }
     const sortHandler = (criteria, direction) => {
         setSortBy(criteria);
         setSortDir(direction);
@@ -84,18 +123,30 @@ const AllPost = () => {
     }
 
     useEffect(() => {
+        if (categoryId !== 0) { // Call fetchPostsByCategory whenever categoryId changes and is not 0
+            setPageNumber(0); // Reset to first page
+            setPosts([]); // Clear posts
+            fetchPostsByCategory();
+        } else {
+            // If categoryId is 0, fetch all posts
+            setPageNumber(0); // Reset to first page
+            setPosts([]); // Clear posts
+            fetchPosts();
+        }
+    }, [categoryId]);
+    useEffect(() => {
         const handleScroll = () => {
             if (
                 window.innerHeight + document.documentElement.scrollTop >=
-                    document.documentElement.offsetHeight - 50 &&
+                document.documentElement.offsetHeight - 50 &&
                 hasMorePosts &&
-                !loading 
+                !loading
             ) {
-                setPageNumber((prevPageNumber) => prevPageNumber + 1); 
+                setPageNumber((prevPageNumber) => prevPageNumber + 1);
             }
         };
 
-        const debounceHandler = debounce(handleScroll, 50); 
+        const debounceHandler = debounce(handleScroll, 50);
         window.addEventListener("scroll", debounceHandler);
         return () => {
             window.removeEventListener("scroll", debounceHandler);
@@ -104,24 +155,45 @@ const AllPost = () => {
 
     return (
         <div className="container mx-auto p-6">
-            <div className="flex justify-between items-center mb-4">
-               
-                <div className="space-x-2">
+            <div className="flex justify-center space-x-6">
+                <div className="">
                     {sortDir === "ascending" && sortBy === "postDate" ? (
                         <button
                             onClick={() => sortHandler("postDate", "descending")}
-                            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+                            className="px-3 py-1 bg-blue-400 text-white text-lg rounded-xl hover:bg-blue-600 transition"
                         >
                             Sort by Newest
                         </button>
                     ) : (
                         <button
                             onClick={() => sortHandler("postDate", "ascending")}
-                            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition"
+                            className="px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition"
                         >
                             Sort by Oldest
                         </button>
                     )}
+                </div>
+                <div>
+                <Form>
+                        <FormGroup>
+                            <Input
+                                type="select"
+                                id="category"
+                                name="category"
+                                value={categoryId}
+                                onChange={(e) => setCategoryId(Number(e.target.value))}
+                                className="rounded-2xl text-lg"
+                            >
+                                <option value="0">All</option>
+                                <option value="1">Music</option>
+                                <option value="2">Movie</option>
+                                <option value="3">Food</option>
+                                <option value="4">Others</option>
+                            </Input>
+                        </FormGroup>
+                    </Form>
+
+
                 </div>
             </div>
 
@@ -134,15 +206,15 @@ const AllPost = () => {
                     ))}
                 </div>
             ) : (
-                <p className="text-center font-semibold text-gray-700">No posts available</p>
+                <p></p>
             )}
-            
+
             {loading && hasMorePosts && (
-                <p className="text-center font-semibold text-gray-500">Loading more posts...</p>
+                <p className="text-center text-xl font-semibold text-gray-500">Loading more posts...</p>
             )}
-            
+
             {!hasMorePosts && !loading && (
-                <p className="bg-gray-200 p-4 mt-5 text-gray-800 text-center font-bold rounded">
+                <p className="bg-gray-200 p-4 mt-5 text-gray-800 text-center text-xl font-bold rounded-2xl">
                     No more posts available.
                 </p>
             )}

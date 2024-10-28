@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import base_url from "../api/base_url";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faDumpster, faEdit, faEllipsis } from "@fortawesome/free-solid-svg-icons";
+import { faDumpster, faEdit, faEllipsis, faThumbsDown, faThumbsUp } from "@fortawesome/free-solid-svg-icons";
 import { toast, ToastContainer } from "react-toastify";
 import UpdatePost from "./UpdatePost";
 
@@ -12,7 +12,10 @@ const Post = ({ post, isUserPost, onDelete }) => {
     const [image, setImage] = useState(null);
     const [isOpen, setIsOpen] = useState(false);
     const [showModel, setShowModel] = useState(false);
-    const [user, setUser] = useState()
+    const [isLiked, setIsLiked] = useState(false);
+    const [isNotLiked, setIsNotLiked] = useState(false);
+    const [user, setUser] = useState();
+    const [clicked,setClicked] = useState(true);
     const getToken = () => {
         return localStorage.getItem("token");
     };
@@ -49,7 +52,9 @@ const Post = ({ post, isUserPost, onDelete }) => {
                 console.log("Cannot fetch the image:", err);
             });
     };
-
+    const showProfile=()=>{
+        
+    }
     const fetchUserDetails = async () => {
         const token = getToken();
         await axios.get(`${base_url}/users/${post.userId}`, {
@@ -123,26 +128,35 @@ const Post = ({ post, isUserPost, onDelete }) => {
                     </div>
 
                     {user && (
-                        <p className="text-gray-700 text-sm mb-2">
-                            Posted by: <span className="font-semibold">{user.username}</span>
+                        <p className="text-gray-700 text-sm mb-2 ">
+                            <span onClick={showProfile()} className="font-medium text-lg no-underline hover:underline decoration-cyan-300 hover:text-cyan-300 hover:underline-offset-4">
+                                {user.username.toUpperCase()}
+                            </span>
                         </p>
                     )}
-
                     {/* Post Title */}
                     <h2 className="font-bold text-xl text-gray-800 mb-2 line-clamp-2">
                         {post?.postTitle}
                     </h2>
 
                     {/* Post Content (Truncated) */}
-                    <p className="text-gray-700 text-base mb-4 overflow-hidden line-clamp-3">
-                        {post?.content.length > 99
+                    <p className={`text-gray-700 text-base mb-4 overflow-hidden ${clicked ? 'line-clamp-3' : ''}`}>
+                        {post?.content.length > 99 && clicked
                             ? (<>
                                 {`${post?.content.substring(0, 100)}.....`}
-                                <button className="text-blue-300 text-xs hover:underline">
+                                <button onClick={()=>setClicked(false)} className="text-blue-300 text-xs hover:underline">
                                     Read More
                                 </button>
                             </>
-                            ) : post?.content}
+                            ) : (
+                                <>
+                                {post?.content}
+                                {post?.content.length >99 && 
+                                <button onClick={()=>setClicked(true)} className="text-blue-300 text-xs hover:underline">
+                                    Read Less
+                                </button>}
+                                </>
+                            )}
                     </p>
 
                     {/* Read More Button */}
@@ -158,10 +172,23 @@ const Post = ({ post, isUserPost, onDelete }) => {
                             />
                         </div>
                     )}
-                    <div className="flex justify-between mt-3 ">
-                        <button>Like</button>
-                        <button>Comment</button>
-                    </div>
+                    {
+                        !isUserPost && (
+                            <div className="flex justify-between mt-3 ">
+                                <div className="space-x-3">
+                                    <button onClick={() => setIsLiked((prevState) => !prevState)} className="group relative ">
+                                        <FontAwesomeIcon className={`${isLiked ? "text-sky-400" : "text-black"} w-6 h-6  transition-transform duration-150 ease-in-out group-hover:scale-110`}
+                                            icon={faThumbsUp} />
+                                    </button>
+                                    <button onClick={() => setIsNotLiked((prevState) => !prevState)} className="group relative focus:outline-none">
+                                        <FontAwesomeIcon className={`${isNotLiked ? "text-sky-400" : "text-black"} w-6 h-6 transition-transform duration-150 ease-in-out group-hover:scale-110`}
+                                            icon={faThumbsDown} />
+                                    </button>
+                                </div>
+                                <button>Comment</button>
+                            </div>
+                        )
+                    }
                 </div>
                 {/* Image Container */}
 
@@ -170,7 +197,7 @@ const Post = ({ post, isUserPost, onDelete }) => {
                 showModel &&
                 (
                     <div className="">
-                        <UpdatePost post={post} model={()=>setShowModel(false)} />
+                        <UpdatePost post={post} model={() => setShowModel(false)} />
                     </div>
                 )
             }

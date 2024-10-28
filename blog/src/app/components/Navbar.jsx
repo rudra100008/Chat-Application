@@ -82,69 +82,62 @@ const Navbar = ({ user }) => {
   }, [user]);
 
   return (
-    <nav className="bg-gray-800 p-4">
-      <div className="container mx-auto flex justify-between items-center">
-        <div className="flex space-x-6">
+    <nav className="bg-gray-600 p-4">
+      <div className="container  flex justify-between ">
+        <div className="flex ">
           {/* Dropdown Menu for Smaller Screens */}
-          <div className="relative">
+          <div className="relative py-1 px-4 ">
             <button
               className="text-gray-300 hover:text-white focus:outline-none"
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             >
-              <FontAwesomeIcon icon={faListSquares} className="w-6 h-6" />
+              <FontAwesomeIcon icon={faListSquares} className="w-5 h-5" />
             </button>
             {isDropdownOpen && (
-              <div className="absolute left-0 mt-2 bg-white rounded-lg shadow-lg w-32">
-                <Link href="/home" className="no-underline block px-4 py-2 hover:bg-gray-200">
-                  <p className={`${pathname === "/home" ? "text-amber-300" : "text-gray-700"}`}>
+              <div className="absolute left-0 mt-2 bg-white rounded-2xl shadow-lg w-32">
+                <Link href="/home" 
+                className={`block px-4 py-2 rounded-2xl hover:bg-gray-200 no-underline ${pathname === "/home" ? "text-amber-300" : "text-gray-400"}`}>
                     <FontAwesomeIcon icon={faHome} /> Home
-                  </p>
                 </Link>
-                <Link href="/about" className="block px-4 py-2 text-gray-700 hover:bg-gray-200 no-underline">
-                  <p className={`${pathname === "/about" ? "text-amber-300" : "text-gray-700"}`}>
+                <Link href="/about" 
+                 className={`${pathname === "/about" ? "text-amber-300" : "text-gray-700"} block px-4 py-2  rounded-2xl hover:bg-gray-200 no-underline`} >
                     <FontAwesomeIcon icon={faInfoCircle} /> About
-                  </p>
                 </Link>
-                {loggedIn ? (
-                  <Link href="/" onClick={handleLogout} className="block px-4 py-2 text-gray-700 hover:bg-gray-200 no-underline">
+                {loggedIn && (
+                  <Link href="/" onClick={handleLogout} className="block px-4 py-2 text-gray-700  hover:bg-gray-200  rounded-2xl no-underline">
                     <FontAwesomeIcon icon={faSignOut} /> LogOut
                   </Link>
-                ) : (
-                  <Link href="/signup" className="block px-4 py-2 text-gray-700 hover:bg-gray-200 no-underline">
-                    <FontAwesomeIcon icon={faSignInAlt} /> Sign Up
-                  </Link>
                 )}
-                <Link href="/settings" className="block px-4 py-2 text-gray-700 hover:bg-gray-200 no-underline">
+                {!loggedIn && (
+                  <Link href="/signup" className="block px-4 py-2 text-gray-700 hover:bg-gray-200  rounded-2xl no-underline">
+                  <FontAwesomeIcon icon={faSignInAlt} /> Sign Up
+                </Link>
+                )}
+                <Link href="/settings" className="block px-4 py-2 text-gray-700 hover:bg-gray-200 rounded-2xl no-underline">
                   <FontAwesomeIcon icon={faCog} /> Settings
                 </Link>
-                <Link href="/profile" className="block px-4 py-2 text-gray-700 hover:bg-gray-200 no-underline">
+                <Link href="/profile" className="block px-4 py-2 text-gray-700 hover:bg-gray-200 rounded-2xl no-underline">
                   <FontAwesomeIcon icon={faUser} /> Profile
                 </Link>
               </div>
             )}
           </div>
-          <h1 className="text-xl font-bold text-white ">
-            <Link href="/home" className='no-underline text-xl font-bold text-white '>
+            <Link href="/home" className='no-underline text-2xl font-bold text-white   '>
               BlogApp
             </Link>
-          </h1>
         </div>
 
         {/* Desktop Menu */}
-        <div className="hidden md:flex  items-center justify center  space-x-9">
-          <Link href="/home" className="hover:text-white no-underline">
-            <p className={`${pathname === "/home" ? "text-amber-300" : "text-gray-400"}`}>
-              <FontAwesomeIcon icon={faHome} className="w-5 h-5" /> <span className='ml-2'>Home</span>
-            </p>
+        <div className="flex  items-center  space-x-9">
+          <Link href="/home" className={`hover:text-white no-underline ${pathname === "/home" ? "text-amber-300" : "text-gray-400"}`}>
+              <FontAwesomeIcon icon={faHome} className=" mr-1" /> Home
           </Link>
-          <Link href="/about" className="no-underline hover:text-white">
-            <p className={`${pathname === "/about" ? "text-amber-300" : "text-gray-400"}`}>
-              <FontAwesomeIcon icon={faInfoCircle} className="w-5 h-5" /> <span className="ml-2">About</span>
-            </p>
+          <Link href="/about" className={`hover:text-white no-underline ${pathname === "/about" ? "text-amber-300" : "text-gray-400"}`}>
+            <FontAwesomeIcon icon={faInfoCircle} className="mr-1" /> About
           </Link>
           {loggedIn ? (
             <button onClick={handleLogout} className="bg-red-600 text-white px-3 py-1 rounded-lg hover:bg-red-700 flex items-center">
-              <FontAwesomeIcon icon={faSignOutAlt} /> <span className="ml-1">Logout</span>
+              <FontAwesomeIcon icon={faSignOutAlt} /> Logout
             </button>
           ) : (
             <Link href="/signup" className="text-gray-300 no-underline hover:text-white">
@@ -155,7 +148,7 @@ const Navbar = ({ user }) => {
             <div className="w-8 h-8 rounded-full overflow-hidden shadow-lg">
               <img src={imageUrl} alt={user.username} className="w-full h-full object-cover" />
             </div>
-            <span className="text-gray-200 font-medium hover:text-blue-400  hover:underline hover:underline-offset-2">
+            <span className="text-gray-200 font-medium hover:text-blue-400 no-underline  hover:underline hover:underline-offset-8 decoration-2">
               @{user.username.toUpperCase()}
             </span>
           </Link>
