@@ -6,12 +6,11 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoId;
-
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-@Document(collection = "like")
-public class Like {
+@NoArgsConstructor
+@Document(collection = "dislike")
+public class DisLike {
     @MongoId
     private int id;
     @DBRef
