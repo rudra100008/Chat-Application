@@ -6,6 +6,7 @@ import com.blogrestapi.Dao.LikeDao;
 import com.blogrestapi.Dao.PostDao;
 import com.blogrestapi.Dao.UserDao;
 import com.blogrestapi.Entity.DisLike;
+import com.blogrestapi.Entity.Like;
 import com.blogrestapi.Entity.Post;
 import com.blogrestapi.Entity.User;
 import com.blogrestapi.Exception.AlreadyExistsException;
@@ -13,10 +14,14 @@ import com.blogrestapi.Exception.ResourceNotFoundException;
 import com.blogrestapi.Service.DisLikeService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+@Service
 public class DisLikeServiceImpl implements DisLikeService {
     @Autowired
     private DisLikeDao disLikeDao;
+    @Autowired
+    private LikeDao likeDao;
     @Autowired
     private ModelMapper modelMapper;
     @Autowired
@@ -32,7 +37,13 @@ public class DisLikeServiceImpl implements DisLikeService {
         User user =this.userDao.findById(userId)
                 .orElseThrow(()-> new ResourceNotFoundException("User not found by id: "+userId));
         if(this.disLikeDao.existsByUserAndPost(user,post)){
-            throw new AlreadyExistsException("Post has already been disliked");
+           DisLike disLike = this.disLikeDao.findByUserAndPost(user,post);
+           this.disLikeDao.delete(disLike);
+           return null;
+        }
+        if(this.likeDao.existsByUserAndPost(user,post)){
+            Like like = this.likeDao.findByUserAndPost(user,post);
+            this.likeDao.delete(like);
         }
 
         DisLike newDislike =

@@ -1,9 +1,11 @@
 package com.blogrestapi.ServiceImpl;
 
 import com.blogrestapi.DTO.LikeDTO;
+import com.blogrestapi.Dao.DisLikeDao;
 import com.blogrestapi.Dao.LikeDao;
 import com.blogrestapi.Dao.PostDao;
 import com.blogrestapi.Dao.UserDao;
+import com.blogrestapi.Entity.DisLike;
 import com.blogrestapi.Entity.Like;
 import com.blogrestapi.Entity.Post;
 import com.blogrestapi.Entity.User;
@@ -22,6 +24,8 @@ public class LikeServiceImpl implements LikeService {
     @Autowired
     private LikeDao likeDao;
     @Autowired
+    private DisLikeDao disLikeDao;
+    @Autowired
     private ModelMapper modelMapper;
     @Autowired
     private UserDao userDao;
@@ -36,7 +40,13 @@ public class LikeServiceImpl implements LikeService {
         Post post=this.postDao.findById(postId)
                 .orElseThrow(()-> new ResourceNotFoundException("Post not found with id: "+postId));
         if(likeDao.existsByUserAndPost(user,post)){
-            throw new AlreadyExistsException("This post has already being liked");
+           Like likePost = this.likeDao.findByUserAndPost(user, post);
+           this.likeDao.delete(likePost);
+           return null;
+        }
+        if(disLikeDao.existsByUserAndPost(user,post)){
+            DisLike dislike =this.disLikeDao.findByUserAndPost(user,post);
+            this.disLikeDao.delete(dislike);
         }
         Like newLike = new Like();
         newLike.setPost(post);

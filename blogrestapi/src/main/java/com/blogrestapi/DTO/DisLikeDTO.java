@@ -9,8 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class DisLikeDTO {
     private int id;
-    private Boolean isDisliked;
-    private Integer numberOfDisLikes;
     private int userId;
     private int postId;
 }
