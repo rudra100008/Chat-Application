@@ -165,8 +165,8 @@ const Profile = () => {
         </div>
         </div>
         
-        <h3 className="text-4xl font-semibold text-gray-700 hover:text-gray-500 hover:font-bold">{userDetails.username}</h3>
-        <p className="text-sm text-gray-500">{userDetails.description}</p>
+        <h3 className="text-4xl font-semibold font-serif text-gray-700 hover:text-gray-500 hover:font-bold">{userDetails.username.toUpperCase()}</h3>
+        <p className="text-sm font-sans text-gray-500">{userDetails.description}</p>
         <div className="flex justify-around mt-4">
           <div>
             <span className="block font-bold text-gray-700">{userDetails.phoneNumber}</span>

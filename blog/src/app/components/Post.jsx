@@ -15,10 +15,13 @@ const Post = ({ post, isUserPost, onDelete }) => {
     const [isLiked, setIsLiked] = useState(false);
     const [isNotLiked, setIsNotLiked] = useState(false);
     const [user, setUser] = useState();
-    const [clicked,setClicked] = useState(true);
+    const [clicked, setClicked] = useState(true);
     const getToken = () => {
         return localStorage.getItem("token");
     };
+    const getUserId = () => {
+        return localStorage.getItem("userId");
+    }
 
     const handleDelete = () => {
         axios.delete(`${base_url}/posts/${post.postId}`, {
@@ -52,8 +55,31 @@ const Post = ({ post, isUserPost, onDelete }) => {
                 console.log("Cannot fetch the image:", err);
             });
     };
-    const showProfile=()=>{
-        
+    const showProfile = () => {
+
+    }
+    const handleLikePost = async () => {
+        const token = getToken();
+        const userId = getUserId();
+        const postId = post.postId;
+    
+        try {
+            // Only call the API if `isLiked` state has changed
+            const response = await axios.post(`${base_url}/likePost`, null, {
+                headers: { Authorization: `Bearer ${token}` },
+                params: { userId, postId }
+            });
+            console.log("Liked post:", response.data);
+            setIsLiked(true); // Set like status to true
+            toast.success("Post liked successfully");
+        } catch (error) {
+            console.error("Error liking post:", error);
+            toast.error("Could not like the post.");
+        }
+    };
+    
+    const handleDislikePost = () => {
+
     }
     const fetchUserDetails = async () => {
         const token = getToken();
@@ -123,10 +149,7 @@ const Post = ({ post, isUserPost, onDelete }) => {
                                 </div>
                             )}
                         </div>
-
-
                     </div>
-
                     {user && (
                         <p className="text-gray-700 text-sm mb-2 ">
                             <span onClick={showProfile()} className="font-medium text-lg no-underline hover:underline decoration-cyan-300 hover:text-cyan-300 hover:underline-offset-4">
@@ -144,17 +167,17 @@ const Post = ({ post, isUserPost, onDelete }) => {
                         {post?.content.length > 99 && clicked
                             ? (<>
                                 {`${post?.content.substring(0, 100)}.....`}
-                                <button onClick={()=>setClicked(false)} className="text-blue-300 text-xs hover:underline">
+                                <button onClick={() => setClicked(false)} className="text-blue-300 text-xs hover:underline">
                                     Read More
                                 </button>
                             </>
                             ) : (
                                 <>
-                                {post?.content}
-                                {post?.content.length >99 && 
-                                <button onClick={()=>setClicked(true)} className="text-blue-300 text-xs hover:underline">
-                                    Read Less
-                                </button>}
+                                    {post?.content}
+                                    {post?.content.length > 99 &&
+                                        <button onClick={() => setClicked(true)} className="text-blue-300 text-xs hover:underline">
+                                            Read Less
+                                        </button>}
                                 </>
                             )}
                     </p>
@@ -176,8 +199,12 @@ const Post = ({ post, isUserPost, onDelete }) => {
                         !isUserPost && (
                             <div className="flex justify-between mt-3 ">
                                 <div className="space-x-3">
-                                    <button onClick={() => setIsLiked((prevState) => !prevState)} className="group relative ">
-                                        <FontAwesomeIcon className={`${isLiked ? "text-sky-400" : "text-black"} w-6 h-6  transition-transform duration-150 ease-in-out group-hover:scale-110`}
+                                    <button onClick={() => {
+                                        setIsLiked(prev => !prev);
+                                        handleLikePost();
+                                    }}
+                                        className="group relative">
+                                        <FontAwesomeIcon className={`${isLiked ? "text-sky-400" : "text-black"} w-6 h-6 transition-transform duration-150 ease-in-out group-hover:scale-110`}
                                             icon={faThumbsUp} />
                                     </button>
                                     <button onClick={() => setIsNotLiked((prevState) => !prevState)} className="group relative focus:outline-none">

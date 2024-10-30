@@ -4,7 +4,7 @@ import axios from "axios";
 import base_url from "../api/base_url";
 import Post from "./Post";
 import { useRouter } from "next/navigation";
-import { Form, FormGroup, Input, Label } from "reactstrap";
+import { Form, FormGroup, Input } from "reactstrap";
 
 const getToken = () => {
     return localStorage.getItem("token");
@@ -60,20 +60,7 @@ const AllPost = () => {
         }
     };
 
-    // const handleCategoryPost = (e) => {
-    //     e.preventDefault();
-    //     setPageNumber(0);
-    //     setPosts([]);
-    //    fetchPostsByCategory();
-    // }
-
-    const fetchPostsByCategory=async()=>{
-        console.log("CateoryId "+categoryId)
-        // if (categoryId === 0) {
-        //     fetchPosts(); 
-        //     console.log("return")
-        //     return;
-        // }
+    const fetchPostsByCategory = async () => {
         try {
             const token = getToken();
             const response = await axios.get(`${base_url}/posts/category/${categoryId}`, {
@@ -89,14 +76,15 @@ const AllPost = () => {
                 const newPosts = data.filter((post) => !existingIds.has(post.postId));
                 return [...prevPost, ...newPosts];
             });
-            
+
             if (data.length === 0) {
                 setHasMorePosts(false);
             }
         } catch (error) {
             console.error("Error fetching category posts:", error.response);
         }
-    }
+    };
+
     const sortHandler = (criteria, direction) => {
         setSortBy(criteria);
         setSortDir(direction);
@@ -123,17 +111,20 @@ const AllPost = () => {
     }
 
     useEffect(() => {
-        if (categoryId !== 0) { // Call fetchPostsByCategory whenever categoryId changes and is not 0
-            setPageNumber(0); // Reset to first page
-            setPosts([]); // Clear posts
+        // Reset posts and pagination when categoryId changes
+        setPageNumber(0); // Reset to first page
+        setPosts([]); // Clear current posts
+        setHasMorePosts(true); // Allow further fetching
+
+        if (categoryId !== 0) {
+            // If categoryId is not 0, fetch category-specific posts
             fetchPostsByCategory();
         } else {
             // If categoryId is 0, fetch all posts
-            setPageNumber(0); // Reset to first page
-            setPosts([]); // Clear posts
             fetchPosts();
         }
     }, [categoryId]);
+
     useEffect(() => {
         const handleScroll = () => {
             if (
@@ -156,7 +147,7 @@ const AllPost = () => {
     return (
         <div className="container mx-auto p-6">
             <div className="flex justify-center space-x-6">
-                <div className="">
+                <div>
                     {sortDir === "ascending" && sortBy === "postDate" ? (
                         <button
                             onClick={() => sortHandler("postDate", "descending")}
@@ -174,7 +165,7 @@ const AllPost = () => {
                     )}
                 </div>
                 <div>
-                <Form>
+                    <Form>
                         <FormGroup>
                             <Input
                                 type="select"
@@ -192,8 +183,6 @@ const AllPost = () => {
                             </Input>
                         </FormGroup>
                     </Form>
-
-
                 </div>
             </div>
 
@@ -201,7 +190,7 @@ const AllPost = () => {
                 <div className="space-y-4">
                     {posts.map((post, index) => (
                         <div key={post.id || index}>
-                            <Post post={post} isUserPost={false} />
+                            <Post post={post} isUserPost={false} onDelete={null} />
                         </div>
                     ))}
                 </div>
