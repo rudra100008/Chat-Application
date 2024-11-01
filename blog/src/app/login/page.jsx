@@ -66,18 +66,6 @@ export default function Login() {
 
     return (
         <div className="min-h-screen items-center flex justify-center bg-gradient-to-r from-blue-300 to-purple-400">
-            <ToastContainer
-                position="top-right"
-                autoClose={3000}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                theme="dark"
-            />
             <Fragment>
                 <Form noValidate onSubmit={handleForm} className="bg-white max-w-md w-full p-8 rounded-lg shadow-lg">
                     <h3 className="text-center text-2xl text-gray-600 font-semibold mb-6">Login to your account</h3>

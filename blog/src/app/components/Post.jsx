@@ -4,8 +4,10 @@ import axios from "axios";
 import base_url from "../api/base_url";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faDumpster, faEdit, faEllipsis, faThumbsDown, faThumbsUp } from "@fortawesome/free-solid-svg-icons";
-import { toast, ToastContainer } from "react-toastify";
+import { toast } from "react-toastify";
 import UpdatePost from "./UpdatePost";
+import { faComment } from "@fortawesome/free-regular-svg-icons";
+import { Button, Form, FormGroup, Input } from "reactstrap";
 
 
 const Post = ({ post, isUserPost, onDelete }) => {
@@ -16,13 +18,61 @@ const Post = ({ post, isUserPost, onDelete }) => {
     const [isNotLiked, setIsNotLiked] = useState(false);
     const [user, setUser] = useState();
     const [clicked, setClicked] = useState(true);
+    const [showComments, setShowComments] = useState(false);
+    const [comments, setComments] = useState('');
+    const [getAllComments, setGetAllComments] = useState([])
     const getToken = () => {
         return localStorage.getItem("token");
     };
     const getUserId = () => {
         return localStorage.getItem("userId");
+    };
+    const saveLike = (liked, disliked) => {
+        localStorage.setItem(`post-${post.postId}-like`, JSON.stringify({ liked, disliked }))
     }
-
+    const loadLikeSaved = () => {
+        const savedLike = JSON.parse(localStorage.getItem(`post-${post.postId}-like`))
+        if (savedLike) {
+            setIsLiked(savedLike.liked);
+            setIsNotLiked(savedLike.disliked);
+        }
+    }
+    const toggleComment = () => {
+        setShowComments(!showComments);
+    }
+    const commentsHandler = async () => {
+        const userId = getUserId();
+        const token = getToken();
+        const postId = post.postId;
+        try {
+            const response = await axios.post(`${base_url}/comments/user/${userId}/post/${postId}`, {
+                comments: comments
+            }, {
+                headers: { Authorization: `Bearer ${token}` }
+            })
+            console.log(response.data);
+            console.log("comment success")
+            setComments('');
+        } catch (error) {
+            console.log(error.response.data)
+            console.log("comment Failed")
+        }
+    }
+    const getAllCommentsFromServer = async () => {
+        const token = getToken();
+        const postId = post.postId;
+        try {
+            const response = await axios.get(`${base_url}/comments/post/${postId}`, {
+                headers: { Authorization: `Bearer ${token}` },
+                params: { pagNumber: 0, pageSize: 3 }
+            })
+            const { data } = response.data;
+            const commentList = data.map(({ comments, id }) => ({ comments, id }));
+            setGetAllComments(commentList);
+        } catch (error) {
+            console.log(error)
+        }
+    }
     const handleDelete = () => {
         axios.delete(`${base_url}/posts/${post.postId}`, {
             headers: {
@@ -57,29 +107,61 @@ const Post = ({ post, isUserPost, onDelete }) => {
     };
     const showProfile = () => {
 
-    }
+    };
     const handleLikePost = async () => {
         const token = getToken();
         const userId = getUserId();
         const postId = post.postId;
-    
+
         try {
-            // Only call the API if `isLiked` state has changed
             const response = await axios.post(`${base_url}/likePost`, null, {
                 headers: { Authorization: `Bearer ${token}` },
                 params: { userId, postId }
             });
-            console.log("Liked post:", response.data);
-            setIsLiked(true); // Set like status to true
-            toast.success("Post liked successfully");
+
+            if (response.data) {
+                // A like was added
+                setIsLiked(true);
+                setIsNotLiked(false); // Ensure dislike is removed if liking
+                saveLike(true, false);
+                toast.success("Post liked successfully");
+                console.log("Post liked", response.data);
+            } else {
+                // Like was removed
+                setIsLiked(false);
+                saveLike(false, isNotLiked);
+                toast.info("Like removed");
+            }
         } catch (error) {
-            console.error("Error liking post:", error);
-            toast.error("Could not like the post.");
+            console.error("Error toggling like:", error);
+            toast.error("Could not toggle like on the post.");
         }
     };
-    
-    const handleDislikePost = () => {
 
+
+    const handleDislikePost = async () => {
+        const token = getToken();
+        const userId = getUserId();
+        const postId = post.postId;
+        try {
+            const response = await axios.post(`${base_url}/dislikePost`, null, {
+                headers: { Authorization: `Bearer ${token}` },
+                params: { userId, postId }
+            })
+            if (response.data) {
+                setIsLiked(false)
+                setIsNotLiked(true);
+                saveLike(false, true);
+                console.log("Post Disliked", response.data);
+            } else {
+                setIsNotLiked(false);
+                saveLike(isLiked, false)
+                toast.info("DisLike removed");
+            }
+
+        } catch (error) {
+            console.error("Error disliking Post: ", error.response.data);
+        }
     }
     const fetchUserDetails = async () => {
         const token = getToken();
@@ -100,22 +182,12 @@ const Post = ({ post, isUserPost, onDelete }) => {
         if (post?.userId) {
             fetchUserDetails();
         }
+        getAllCommentsFromServer();
+        loadLikeSaved();
     }, [post?.image, post?.userId]);
 
     return (
-        <div className="flex justify-center">
-            <ToastContainer
-                position="top-right"
-                autoClose={3000}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                theme="dark"
-            />
+        <div className="flex justify-center flex-col items-center">
             <div className="max-w-sm w-full h-auto rounded-md overflow-hidden shadow-lg bg-white m-4 cursor-pointer transition-transform hover:scale-105 hover:shadow-xl">
 
                 <div className="px-6 py-4 h-auto flex flex-col justify-between">
@@ -152,7 +224,7 @@ const Post = ({ post, isUserPost, onDelete }) => {
                     </div>
                     {user && (
                         <p className="text-gray-700 text-sm mb-2 ">
-                            <span onClick={showProfile()} className="font-medium text-lg no-underline hover:underline decoration-cyan-300 hover:text-cyan-300 hover:underline-offset-4">
+                            <span className="font-medium text-lg no-underline hover:underline decoration-cyan-300 hover:text-cyan-300 hover:underline-offset-4">
                                 {user.username.toUpperCase()}
                             </span>
                         </p>
@@ -195,24 +267,24 @@ const Post = ({ post, isUserPost, onDelete }) => {
                             />
                         </div>
                     )}
+                    {/* like, Dislike and Comment */}
                     {
                         !isUserPost && (
                             <div className="flex justify-between mt-3 ">
                                 <div className="space-x-3">
-                                    <button onClick={() => {
-                                        setIsLiked(prev => !prev);
-                                        handleLikePost();
-                                    }}
+                                    <button onClick={handleLikePost}
                                         className="group relative">
                                         <FontAwesomeIcon className={`${isLiked ? "text-sky-400" : "text-black"} w-6 h-6 transition-transform duration-150 ease-in-out group-hover:scale-110`}
                                             icon={faThumbsUp} />
                                     </button>
-                                    <button onClick={() => setIsNotLiked((prevState) => !prevState)} className="group relative focus:outline-none">
+                                    <button onClick={handleDislikePost} className="group relative focus:outline-none">
                                         <FontAwesomeIcon className={`${isNotLiked ? "text-sky-400" : "text-black"} w-6 h-6 transition-transform duration-150 ease-in-out group-hover:scale-110`}
                                             icon={faThumbsDown} />
                                     </button>
                                 </div>
-                                <button>Comment</button>
+                                <button onClick={toggleComment}>
+                                    <FontAwesomeIcon icon={faComment} className="w-6 h-6 transition-transform duration-150 ease-in-out group-hover:scale-110" />
+                                </button>
                             </div>
                         )
                     }
@@ -220,6 +292,37 @@ const Post = ({ post, isUserPost, onDelete }) => {
                 {/* Image Container */}
 
             </div>
+            {/*Comment section */}
+            {
+                showComments &&
+                <>
+                    <div className="bg-gray-100 rounded-2xl shadow-xl max-w-sm w-full py-3 px-4 ">
+                        <Form onSubmit={(e) => e.preventDefault()}>
+                            <FormGroup>
+                                <Input
+                                    id="comment"
+                                    name="comment"
+                                    type="text"
+                                    value={comments}
+                                    onChange={(e) => setComments(e.target.value)}
+                                    placeholder="Write a comment...."
+                                />
+                            </FormGroup>
+                            <button onClick={commentsHandler} className=" bg-sky-300 rounded-2xl shadow-lg py-2 px-4 font-semibold transition-transform hover:scale-110 hover:text-white" >
+                                Comment
+                            </button>
+                        </Form>
+                        {getAllComments.length > 0 &&
+                            getAllComments.map((comment) => (
+                                <div key={comment.id} className="border-b py-3">
+                                    {/* <img src={image} className="w-4 h-4 rounded-full" alt="" /> */}
+                                    <p className="text-gray-700 text-sm">{comment.comments}</p>
+                                </div>
+                            ))
+                        }
+                    </div>
+                </>
+            }
             {
                 showModel &&
                 (
@@ -228,6 +331,7 @@ const Post = ({ post, isUserPost, onDelete }) => {
                     </div>
                 )
             }
+
         </div>
     );
 };
