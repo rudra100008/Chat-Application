@@ -9,15 +9,11 @@ import com.blogrestapi.Entity.DisLike;
 import com.blogrestapi.Entity.Like;
 import com.blogrestapi.Entity.Post;
 import com.blogrestapi.Entity.User;
-import com.blogrestapi.Exception.AlreadyExistsException;
 import com.blogrestapi.Exception.ResourceNotFoundException;
 import com.blogrestapi.Service.LikeService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.HashMap;
-import java.util.Map;
 
 @Service
 public class LikeServiceImpl implements LikeService {
@@ -34,7 +30,7 @@ public class LikeServiceImpl implements LikeService {
     @Autowired
     private SequenceGeneratorService generatorService;
     @Override
-    public LikeDTO postLike( int userId, int postId) {
+    public synchronized LikeDTO postLike( int userId, int postId) {
         User user=this.userDao.findById(userId)
                 .orElseThrow(()-> new ResourceNotFoundException("User not found with id: "+userId));
         Post post=this.postDao.findById(postId)

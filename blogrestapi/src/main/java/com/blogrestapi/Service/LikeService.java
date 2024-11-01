@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public interface LikeService {
-    LikeDTO postLike(int userId,int postId);
+    LikeDTO  postLike(int userId,int postId);
     Long countLikeForPost(int postId);
     void removeLike(int userId,int postId);
 

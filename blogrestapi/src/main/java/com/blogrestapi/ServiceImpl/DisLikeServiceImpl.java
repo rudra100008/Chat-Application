@@ -31,7 +31,7 @@ public class DisLikeServiceImpl implements DisLikeService {
     @Autowired
     private SequenceGeneratorService generatorService;
     @Override
-    public DisLikeDTO postDelete(int userId, int postId) {
+    public synchronized DisLikeDTO postDelete(int userId, int postId) {
         Post post  = this.postDao.findById(postId)
                 .orElseThrow(()-> new ResourceNotFoundException("Post not found by id: "+postId));
         User user =this.userDao.findById(userId)
