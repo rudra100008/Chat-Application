@@ -1,0 +1,58 @@
+.chatContainer{
+  background-color: white;
+  padding: 5px 15px;
+}
+.chatHeader{
+  text-align: center;
+  margin-bottom: 10px;
+}
+.chatHeader h2{
+  font-size: 2rem;
+  color: #333333;
+  margin: 0;
+}
+.chatHeader span{
+  font-size: medium;
+  color: rgb(179, 176, 176);
+}
+.field {
+  padding: 10px 15px;
+  margin: 10px 10px;
+  width: 300px;
+  outline: none;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  transition: border-color 0.3s, box-shadow 0.3s;
+  font-size: 1rem;
+}
+
+.field:focus {
+  border: 1px solid #00aaff;
+  box-shadow: 0 0 8px rgba(63, 172, 226, 0.2);
+}
+.chatInput{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.enter {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  background-color: #0077cc;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background-color 0.3s;
+}
+
+.enter:hover {
+  background-color: #005fa3;
+}
+
+.enter:active {
+  background-color: #004f8a;
+}
+
+
+
