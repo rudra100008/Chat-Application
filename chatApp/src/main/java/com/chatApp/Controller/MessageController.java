@@ -24,4 +24,10 @@ public class MessageController {
         }
         return  message;
     }
+    @MessageMapping("/chat.join")
+    @SendTo("/topic/notification")
+    public String notifyJoin(@RequestBody Message message){
+        return message.getName() + " has joined the chat";
+    }
+
 }
